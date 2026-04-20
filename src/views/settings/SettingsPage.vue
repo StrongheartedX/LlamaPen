@@ -54,7 +54,7 @@ function ollamaUrlCheck(url: string): string {
         url = ollamaDefault;
     }
 
-    config.ollamaUrl = url;
+    config.ollama.url = url;
     location.reload();
 
     return url;
@@ -146,7 +146,7 @@ const selectedProvider = computed({
         <SettingsOptionCategory v-if="isOllama" label="Ollama">
             <SettingsInputText 
                 label="Ollama URL" 
-                v-model="config.ollamaUrl" 
+                v-model="config.ollama.url" 
                 :default="ollamaDefault"
                 :check="ollamaUrlCheck"
                 :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />

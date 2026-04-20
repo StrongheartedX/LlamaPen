@@ -58,7 +58,7 @@ function hide() {
 		<template #body>
 			<div class="h-full flex flex-col">
 				<div class="grow">
-					Unable to connect to Ollama at <code>{{ config.ollamaUrl }}</code>. Ensure Ollama is running and
+					Unable to connect to Ollama at <code>{{ config.ollama.url }}</code>. Ensure Ollama is running and
 					accepts connection requests from this site.
 					<br>
 					<br>

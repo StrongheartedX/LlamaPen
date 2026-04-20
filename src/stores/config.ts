@@ -1,13 +1,15 @@
 import logger from '@/lib/logger';
+import { migrations, runMigrations } from '@/lib/migration';
 import { defineStore } from "pinia";
 
 interface Config {
-    ollamaUrl: string,
+    _version: number;
     selectedModel: string,
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
     ollama: {
+        url: string;
         modelCapabilities: {
             autoload: boolean,
             alwaysAutoload: boolean,
@@ -84,12 +86,13 @@ export const defaultMessageOptions = { // Defaults from https://github.com/ollam
  */
 export const useConfigStore = defineStore('config', {
     state: (): Config => ({
-        ollamaUrl: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+        _version: migrations.length,
         selectedModel: '',
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
         ollama: {
+            url: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
             modelCapabilities: {
                 autoload: true,
                 alwaysAutoload: false
@@ -146,7 +149,7 @@ export const useConfigStore = defineStore('config', {
         }
     }),
     getters: {
-        requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollamaUrl}${path}`,
+        requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollama.url}${path}`,
     },
     actions: {
         setTransitionSpeed(speed: number) {
@@ -188,5 +191,8 @@ export const useConfigStore = defineStore('config', {
     },
     persist: {
         storage: localStorage,
-    }
+        afterHydrate: (ctx) => {
+            runMigrations(ctx.store);
+        }
+    },
 })

@@ -1,4 +1,5 @@
 import logger from "@/lib/logger";
+import { useConfigStore } from "@/stores/config";
 import { tryCatch } from "@/utils/core/tryCatch";
 import { Ollama, type ChatRequest, type CopyRequest, type DeleteRequest, type ShowRequest, type PullRequest } from "ollama/browser";
 
@@ -6,11 +7,19 @@ import { Ollama, type ChatRequest, type CopyRequest, type DeleteRequest, type Sh
  * Wrapper for the Ollama SDK to handle errors and have centralized Ollama interactions.
  */
 class OllamaWrapper {
-    private baseConfig = {
-		host: "http://127.0.0.1:11434", // useConfigStore().ollamaUrl
-	};
+    private get baseConfig() {
+        return { host: useConfigStore().ollama.url };
+    }
 
-    ollama = new Ollama(this.baseConfig);
+    private _ollama: Ollama | null = null;
+    private get ollama() {
+        if (this._ollama) {
+            return this._ollama;
+        }
+
+        this._ollama = new Ollama(this.baseConfig);
+        return this._ollama;
+    }
 
     async version() {
         const response = await tryCatch(this.ollama.version());
