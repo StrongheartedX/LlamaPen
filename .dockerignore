@@ -1,5 +1,35 @@
+# Bun/Node
 node_modules
 dist
-.git
-.vscode
 dev-dist
+.vite
+
+# Docker
+.dockerignore
+Dockerfile*
+
+# Docs
+README.md
+CONTRIBUTING.md
+LICENSE
+
+# Version Control
+.git
+.gitignore
+
+# IDE Files
+.vscode
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# Testing
+tests
+coverage
+*.test.ts
+
+# 3rd Party
+.github
+vercel.json
