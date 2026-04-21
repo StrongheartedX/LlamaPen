@@ -9,11 +9,16 @@ import removeAttribute from '@castlenine/vite-remove-attribute';
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 
-const commitHash = execFileSync(
-    'git',
-    ['rev-parse', 'HEAD'],
-    { encoding: 'utf-8' }
-).trim();
+let commitHash: string;
+try {
+    commitHash = execFileSync(
+        'git',
+        ['rev-parse', 'HEAD'],
+        { encoding: 'utf-8' }
+    ).trim();
+} catch {
+    commitHash = 'unknown';
+}
 
 // https://vite.dev/config/
 export default defineConfig({
