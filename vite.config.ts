@@ -136,16 +136,46 @@ export default defineConfig({
         }
     },
     build: {
-        rollupOptions: {
+        rolldownOptions: {
             output: {
-                manualChunks: {
-                    'vue-vendor': ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
-                    'markdown': ['marked', 'marked-katex-extension', 'katex', 'dompurify'],
-                    'highlightjs': ['highlight.js'],
-                    'icons': ['vue-icons-plus'],
-                    'db': ['dexie'],
-                    'cloud': ['@supabase/supabase-js'],
-                    'utils': ['mitt', 'mustache', 'readable-stream']
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: 'vue-vendor',
+                            test: /node_modules[\\/](vue|vue-router|pinia|pinia-plugin-persistedstate)/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'markdown',
+                            test: /node_modules[\\/](marked|marked-katex-extension|katex|dompurify)/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'highlightjs',
+                            test: /node_modules[\\/]highlight\.js/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'icons',
+                            test: /node_modules[\\/]vue-icons-plus/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'db',
+                            test: /node_modules[\\/]dexie/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'cloud',
+                            test: /node_modules[\\/]@supabase\/supabase-js/,
+                            priority: 20,
+                        },
+                        {
+                            name: 'utils',
+                            test: /node_modules[\\/](mitt|mustache|readable-stream)/,
+                            priority: 20,
+                        }
+                    ]
                 },
             },
         },
