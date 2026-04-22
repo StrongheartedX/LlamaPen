@@ -16,7 +16,7 @@ const config = useConfigStore();
 
 const isVisible = ref<boolean>(false);
 const timeoutDuration = config.ui.tooltip.waitTimeoutMs;
-let timeoutId: null | NodeJS.Timeout = null;
+let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const buttonRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);

@@ -2,8 +2,7 @@
 import { useChatSearch } from '@/composables/useChatSearch';
 import { emitter } from '@/lib/mitt';
 import router from '@/lib/router';
-import { nextTick } from 'process';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { BiFilterAlt, BiTimeFive } from 'vue-icons-plus/bi';
 import { PiSparkleFill } from 'vue-icons-plus/pi';
 

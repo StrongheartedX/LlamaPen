@@ -172,7 +172,7 @@ export default defineConfig({
                         },
                         {
                             name: 'utils',
-                            test: /node_modules[\\/](mitt|mustache|readable-stream)/,
+                            test: /node_modules[\\/](mitt|mustache)/,
                             priority: 20,
                         }
                     ]

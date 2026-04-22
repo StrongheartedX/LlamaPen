@@ -7,7 +7,7 @@ import { nextTick } from "vue";
 describe('Lightbox.vue', () => {
     let wrapper: VueWrapper<InstanceType<typeof Lightbox>>;
     beforeEach(() => {
-        global.URL.createObjectURL = vi.fn(() => '/mockurl.png');
+        URL.createObjectURL = vi.fn(() => '/mockurl.png');
         wrapper = mount(Lightbox);
     });
 
@@ -36,7 +36,7 @@ describe('Lightbox.vue', () => {
         emitter.emit('openLightbox', { image: blob });
         await nextTick();
 
-        expect(global.URL.createObjectURL).toHaveBeenCalledWith(blob);
+        expect(URL.createObjectURL).toHaveBeenCalledWith(blob);
         expect(wrapper.find('img').element.getAttribute('src')).toBe('/mockurl.png');
 
         await wrapper.find('[data-testid="lightbox-overlay"]').trigger('click');
