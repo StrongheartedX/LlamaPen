@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "test": "bunx vitest",
-    "build": "vue-tsc -b && vite build",
+    "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
+    "test": "bunx --bun vitest",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
     "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
   },
   "dependencies": {
@@ -22,7 +24,6 @@
     "mustache": "^4.2.0",
     "normalize.css": "^8.0.1",
     "ollama": "^0.6.3",
-    "path": "^0.12.7",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "readable-stream": "^4.7.0",
@@ -36,6 +37,8 @@
     "@pinia/testing": "^1.0.3",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.4",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/jsdom": "^28.0.1",
     "@types/mustache": "^4.2.6",
     "@types/node": "^24.12.2",
     "@types/readable-stream": "^4.0.23",
@@ -49,6 +52,7 @@
     "caniuse-lite": "^1.0.30001788",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.4.0",
+    "npm-run-all2": "^8.0.4",
     "tailwindcss": "^4.2.4",
     "tailwindcss-motion": "^1.1.1",
     "typescript": "~5.9.3",

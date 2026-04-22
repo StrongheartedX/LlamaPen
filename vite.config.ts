@@ -1,10 +1,11 @@
+import { fileURLToPath } from 'node:url';
+import { execFileSync } from "node:child_process";
+
 import { defineConfig } from 'vite';
 import vue from "@vitejs/plugin-vue";
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
-import { execFileSync } from "node:child_process";
 import removeAttribute from '@castlenine/vite-remove-attribute';
 import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -131,7 +132,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "src"),
+            "@": fileURLToPath(new URL('./src', import.meta.url)),
         }
     },
     build: {
@@ -144,7 +145,7 @@ export default defineConfig({
                     'icons': ['vue-icons-plus'],
                     'db': ['dexie'],
                     'cloud': ['@supabase/supabase-js'],
-                    'utils': ['mitt', 'mustache', 'path', 'readable-stream']
+                    'utils': ['mitt', 'mustache', 'readable-stream']
                 },
             },
         },

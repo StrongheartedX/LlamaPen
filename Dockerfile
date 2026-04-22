@@ -7,7 +7,7 @@ COPY bun.lock package.json ./
 RUN bun install --frozen-lockfile
 
 COPY . .
-RUN bunx --bun vite build
+RUN bun run build
 
 
 # Serve Stage
