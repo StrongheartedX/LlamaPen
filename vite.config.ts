@@ -117,7 +117,9 @@ export default defineConfig({
             },
             registerType: 'autoUpdate',
             workbox: {
-                globPatterns: ['**/*.{js,wasm,css,html,ico,png,svg,txt,xml}']
+                globPatterns: process.env.NODE_ENV === 'production'
+                    ? ['**/*.{js,wasm,css,html,ico,png,svg,txt,xml}']
+                    : []
             },
             devOptions: {
                 enabled: true
