@@ -12,38 +12,31 @@ export type ChatIteratorChunk = {
 	stats?: ModelChatMessage['stats']
 } | {
 	type: 'message',
-	data: {
-		model: string;
-		created_at: Date;
-		message: Message;
-		done: boolean;
-		done_reason: string;
-		total_duration?: number;
-		load_duration?: number;
-		prompt_eval_count?: number;
-		prompt_eval_duration?: number;
-		eval_count?: number;
-		eval_duration?: number;
-	};
+	content: string;
+	thinking?: string;
+	tool_calls?: ToolCall[];
 };
 
-type Message = {
-    role: string;
-    content: string;
-    thinking?: string;
-    images?: Uint8Array[] | string[];
-    tool_calls?: ToolCall[];
-    tool_name?: string;
-}
-
-interface ToolCall {
+export interface ToolCall {
     function: {
         name: string;
-        arguments: {
-            [key: string]: any;
-        };
+        arguments: Record<string, string | number | boolean>;
     };
 }
+
+export type ProviderMessageRole = 'system' | 'user' | 'assistant' | 'tool';
+
+export type ProviderMessage = {
+	role: ProviderMessageRole;
+	content: string;
+	thinking?: string;
+	images?: string[]; // base64-encoded images
+	tool_calls?: ToolCall[];
+} | {
+	role: 'tool';
+	tool_name: string;
+	content: string;
+};
 
 export type ChatOptions = {
 	model: string;

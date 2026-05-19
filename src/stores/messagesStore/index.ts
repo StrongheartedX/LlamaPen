@@ -322,8 +322,8 @@ const useMessagesStore = defineStore('messages', () => {
 					messageGenerationStates.value[ollamaMessageId] = { status: 'generating' };
 				}
 
-				const messageChunk = chunk.data.message.content;
-				const thoughtsChunk = chunk.data.message.thinking || '';
+				const messageChunk = chunk.content;
+				const thoughtsChunk = chunk.thinking ?? '';
 
 				const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
 				if (messageIndex !== -1) {
@@ -344,8 +344,8 @@ const useMessagesStore = defineStore('messages', () => {
 						thinkEnded = Date.now();
 					}
 
-					if (chunk.data.message.tool_calls) {
-						for (const toolCall of chunk.data.message.tool_calls) {
+					if (chunk.tool_calls) {
+						for (const toolCall of chunk.tool_calls) {
 							logger.info('Messages Store', 'Saved tool call to list', toolCall);
 							toolCalls.push(toolCall);
 						}
