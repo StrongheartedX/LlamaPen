@@ -28,7 +28,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
         return {
             info: model,
             displayName,
-            loadedInMemory: false,
             hidden: isHidden,
         }
     }

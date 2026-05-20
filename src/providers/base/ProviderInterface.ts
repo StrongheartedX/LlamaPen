@@ -69,15 +69,13 @@ export interface BaseLLMProvider {
 }
 
 export interface OllamaLLMProvider extends BaseLLMProvider {
+    readonly loadedModelIds: Ref<Set<string>>;
+    refreshLoadedModels(): Promise<void>;
+    
     /**
      * @param modelId The model to get details for.
      */
     getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
-
-    /**
-     * Get the IDs of models currently loaded into memory.
-     */
-    getLoadedModelIds(): Promise<string[]>;
 
     /**
      * Loads a model into memory.
@@ -105,7 +103,7 @@ export type LLMProviderTypes = OllamaProvider;
 
 
 export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
-    return 'getLoadedModelIds' in provider;
+    return 'refreshLoadedModels' in provider;
 }
 
 export function isLPCloudProvider(provider: LLMProvider): provider is LPCloudProvider {

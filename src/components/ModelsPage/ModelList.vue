@@ -15,8 +15,7 @@ import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { rawModels } = useProviderManager();
-const { isConnected, isLoading, allModelIds, isOllama } = useProviderManager();
+const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds } = useProviderManager();
 const cloudUserStore = useCloudUserStore();
 
 const props = defineProps<{
@@ -30,7 +29,7 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
-const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => item.info.id === modelName && item.loadedInMemory);
+const isLoadedInMemory = (modelName: string) => loadedModelIds.value.has(modelName);
 
 const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     {
@@ -216,7 +215,7 @@ const batchActions: MenuEntry[] = [
                 No models match search
             </div>
             <RouterLink 
-                v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
+                v-for="{ info, hidden, displayName } in queriedModels"
                 exactActiveClass="router-link-exact-active"
                 :to="`/models/installed/${info.id}`"
                 class="group"
@@ -232,7 +231,7 @@ const batchActions: MenuEntry[] = [
                     <Tooltip v-if="hidden" text="Hidden" class="flex items-center justify-center">
                         <BiHide class="h-full" />
                     </Tooltip>
-                    <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
+                    <Tooltip v-if="isLoadedInMemory(info.id)" text="Loaded in memory" class="flex items-center justify-center">
                         <IconMemoryLoad class="h-full" />
                     </Tooltip>
                     <FloatingActionMenu 

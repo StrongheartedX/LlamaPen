@@ -14,7 +14,7 @@ import { isOllamaProvider } from '@/providers/base/ProviderInterface';
 const config = useConfigStore();
 
 // State
-const { rawModels, loadModels, currentProvider } = useProviderManager();
+const { rawModels, loadModels, currentProvider, loadedModelIds } = useProviderManager();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -74,7 +74,7 @@ async function setModelViewInfo(modelId: string) {
         selectedModel.value = {
             state: 'data',
             model: response,
-            isLoaded: rawModels.value.some(item => item.info.id === modelId && item.loadedInMemory),
+            isLoaded: loadedModelIds.value.has(modelId),
             type: 'ollama'
         };
     } else {
@@ -88,7 +88,7 @@ async function setModelViewInfo(modelId: string) {
         selectedModel.value = {
             state: 'data',
             model: foundModel,
-            isLoaded: foundModel.loadedInMemory,
+            isLoaded: loadedModelIds.value.has(modelId),
             type: 'generic',
         }
     }

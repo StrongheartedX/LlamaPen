@@ -15,6 +15,7 @@ import type { ModelInfo } from "@/composables/useProviderManager";
 export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
     readonly name = "Ollama";
     readonly rawModels = ref<ModelInfo[]>([]);
+    readonly loadedModelIds = ref<Set<string>>(new Set());
 
     readonly hasOllamaFeatures = true as const;
 
@@ -26,13 +27,12 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 
 
     protected async onModelsLoaded(): Promise<void> {
-        let loadedModelIds = await this.getLoadedModelIds();
+        await this.refreshLoadedModels();
 
         this.rawModels.value = this.rawModels.value.map(m => {
             return {
                 ...m,
                 subtitle: m.info.id,
-                loadedInMemory: loadedModelIds.includes(m.info.id),
             };
         });
 
@@ -111,12 +111,14 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
         return generateChatTitle(messages);
     }
 
-
-    async getLoadedModelIds(): Promise<string[]> {
+    async refreshLoadedModels(): Promise<void> {
         const loadedModels = await ollamaWrapper.ps();
-        if (!loadedModels) return [];
+        if (!loadedModels) {
+            this.loadedModelIds.value = new Set();
+            return;
+        }
 
-        return loadedModels.map(model => model.model);
+        this.loadedModelIds.value = new Set(loadedModels.map(model => model.model));
     }
 
     async loadModelIntoMemory(modelId: string): Promise<boolean> {

@@ -4,12 +4,15 @@ import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
 import type { Model } from "@/providers/base/types";
 import { useConfigStore } from "@/stores/config";
+import logger from "@/lib/logger";
 
 // Types
+// `ModelInfo` represents the provider + app-level info about a model. I.e.
+// the custom user-set name, and whether it's hidden in the UI. The `info`
+// property contains the actual info from the provider such as id, capabilities, etc.
 export type ModelInfo = {
     info: Model;
     displayName: string;
-    loadedInMemory: boolean;
     hidden: boolean;
 }
 
@@ -30,6 +33,12 @@ export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getSelectedProvider());
     const currentProviderId = computed(() => providerFactory.getSelectedProviderId())
     const rawModels = currentProvider.value.rawModels;
+    const loadedModelIds = computed(() => {
+        if (isOllamaProvider(currentProvider.value)) {
+            return currentProvider.value.loadedModelIds.value;
+        }
+        return new Set<string>();
+    });
 
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
     const isLPCloud = computed(() => isLPCloudProvider(currentProvider.value));
@@ -80,11 +89,11 @@ export function useProviderManager() {
         return currentProvider.value.unloadModel(modelId);
     };
 
-    const getLoadedModelIds = () => {
-        if (!isOllamaProvider(currentProvider.value)) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
+    const refreshLoadedModels = () => {
+        if (isOllamaProvider(currentProvider.value)) {
+            return currentProvider.value.refreshLoadedModels();
         }
-        return currentProvider.value.getLoadedModelIds();
+        logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
     };
 
     const getModelDetails = (modelId: string) => {
@@ -159,9 +168,10 @@ export function useProviderManager() {
         generateChatTitle,
 
         // Ollama-specific
+        loadedModelIds,
         loadModelIntoMemory,
         unloadModel,
-        getLoadedModelIds,
+        refreshLoadedModels,
         getModelDetails,
 
         // Get model info
