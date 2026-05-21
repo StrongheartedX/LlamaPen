@@ -12,6 +12,8 @@ import useCloudUserStore from "@/stores/useCloudUserStore";
 
 export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider {
     readonly name = "LlamaPen Cloud";
+    readonly type = 'lpcloud';
+
     readonly rawModels: Ref<ModelInfo[]> = ref([]);
 
     readonly connectionState: Reactive<ConnectionState> = reactive({

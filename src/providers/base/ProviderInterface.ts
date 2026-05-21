@@ -1,9 +1,7 @@
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
 import type { Reactive, Ref } from "vue";
-import type { OllamaProvider } from "../ollama/OllamaProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
-import type { LPCloudProvider } from "../lpcloud/LPCloudProvider";
 
 export type ConnectionState = {
     status: 'connected' | 'disconnected' | 'checking' | 'error';
@@ -16,13 +14,14 @@ export interface BaseLLMProvider {
      * Pretty name of the provider.
      */
     readonly name: string;
+    readonly type: 'ollama' | 'lpcloud';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
     /** 
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
-    refreshConnection(): Promise<void>
+    refreshConnection(): Promise<void>;
 
     /**
      * Loads models from the provider and initialises capabilities.
@@ -96,16 +95,10 @@ export interface LPCloudLLMProvider extends BaseLLMProvider {
     isSignedIn: boolean;
 }
 
-
 export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
 
-export type LLMProviderTypes = OllamaProvider;
+export const isOllamaProvider = (provider: LLMProvider): provider is OllamaLLMProvider => 
+    provider.type === 'ollama';
 
-
-export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
-    return 'refreshLoadedModels' in provider;
-}
-
-export function isLPCloudProvider(provider: LLMProvider): provider is LPCloudProvider {
-    return 'isSignedIn' in provider;
-}
+export const isLPCloudProvider = (provider: LLMProvider): provider is LPCloudLLMProvider => 
+    provider.type === 'lpcloud';

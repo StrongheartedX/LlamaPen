@@ -7,6 +7,7 @@ import logger from "@/lib/logger";
 
 export abstract class BaseProvider implements BaseLLMProvider {
     abstract readonly name: string;
+    abstract readonly type: 'ollama' | 'lpcloud';
     abstract readonly connectionState: BaseLLMProvider['connectionState'];
 
     abstract readonly rawModels: Ref<ModelInfo[]>;

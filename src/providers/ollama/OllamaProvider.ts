@@ -14,6 +14,8 @@ import type { ModelInfo } from "@/composables/useProviderManager";
  */
 export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
     readonly name = "Ollama";
+    readonly type = 'ollama';
+
     readonly rawModels = ref<ModelInfo[]>([]);
     readonly loadedModelIds = ref<Set<string>>(new Set());
 
