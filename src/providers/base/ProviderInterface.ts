@@ -96,9 +96,3 @@ export interface LPCloudLLMProvider extends BaseLLMProvider {
 }
 
 export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
-
-export const isOllamaProvider = (provider: LLMProvider): provider is OllamaLLMProvider => 
-    provider.type === 'ollama';
-
-export const isLPCloudProvider = (provider: LLMProvider): provider is LPCloudLLMProvider => 
-    provider.type === 'lpcloud';

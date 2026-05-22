@@ -6,7 +6,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ModelViewInfo } from '@/components/ModelsPage/types';
-import { isOllamaProvider } from '@/providers/base/ProviderInterface';
+import { isOllamaProvider } from "@/providers/utils/ProviderCheck";
 
 // todo(provider-separation): organise the components for this by provider,
 // e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.

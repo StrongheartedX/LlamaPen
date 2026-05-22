@@ -1,4 +1,5 @@
-import { isLPCloudProvider, isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
+import { type LLMProvider } from "@/providers/base/ProviderInterface";
+import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderCheck";
 import type { ModelCapabilities } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
