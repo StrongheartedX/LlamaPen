@@ -1,5 +1,5 @@
 import { chat, generateChatTitle } from "./helpers";
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import type { ShowResponse } from "ollama/browser";
@@ -74,27 +74,35 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
         return chat(ollamaFormatMessages, abortSignal, options);
     }
 
-    public async getModels(): Promise<Model[]> {
+    public async getModels(): Promise<ModelInfo[]> {
+        const configStore = useConfigStore();
         const list = await ollamaWrapper.list();
 
         return list.map((m) => {
+            const displayName = configStore.chat.modelRenames[m.model] || m.name;
+            const isHidden = configStore.chat.hiddenModels.includes(m.model);
+
             return {
-                name: m.name,
-                id: m.model,
-                subtitle: m.details.parameter_size,
-                capabilities: {
-                    supportsFunctionCalling: false,
-                    supportsReasoning: false,
-                    supportsVision: false,
-                },
-                providerMetadata: {
-                    provider: 'ollama',
-                    data: {
-                        size: m.size,
-                        parameterSize: m.details.parameter_size,
-                        family: m.details.family,
-                        modifiedAt: m.modified_at,
-                        quantization: m.details.quantization_level,
+                displayName,
+                hidden: isHidden,
+                info: {
+                    name: m.name,
+                    id: m.model,
+                    subtitle: m.details.parameter_size,
+                    capabilities: {
+                        supportsFunctionCalling: false,
+                        supportsReasoning: false,
+                        supportsVision: false,
+                    },
+                    providerMetadata: {
+                        provider: 'ollama',
+                        data: {
+                            size: m.size,
+                            parameterSize: m.details.parameter_size,
+                            family: m.details.family,
+                            modifiedAt: m.modified_at,
+                            quantization: m.details.quantization_level,
+                        }
                     }
                 }
             }

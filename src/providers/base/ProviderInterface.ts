@@ -1,4 +1,4 @@
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
+import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
 import type { Reactive, Ref } from "vue";
 import type { ModelInfo } from "@/composables/useProviderManager";
@@ -45,12 +45,6 @@ export interface BaseLLMProvider {
         abortSignal: AbortSignal, 
         options: ChatOptions,
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
-
-    /**
-     * Get a list of available models from the provider. This is used when loading capabilites in some providers to set `rawModels`.
-     * TODO: We could also maybe have another method to get all models (e.g. ones not available/selected for use)
-     */
-    getModels(): Promise<Model[]>;
 
     /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.

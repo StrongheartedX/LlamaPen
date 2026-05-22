@@ -1,8 +1,8 @@
 import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
-import { useConfigStore } from "@/stores/config";
+import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "./types";
 import type { ModelInfo } from "@/composables/useProviderManager";
+import { useConfigStore } from "@/stores/config";
 import logger from "@/lib/logger";
 
 export abstract class BaseProvider implements BaseLLMProvider {
@@ -16,23 +16,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
 
-    private transformModel(model: Model): ModelInfo {
-        const modelId = model.id;
-
-        const displayName = 
-            useConfigStore().chat.modelRenames[modelId] ||
-            model.name ||
-            modelId;
-
-        const isHidden = useConfigStore().chat.hiddenModels.includes(modelId);
-
-        return {
-            info: model,
-            displayName,
-            hidden: isHidden,
-        }
-    }
-
     async loadModels(force: boolean = false): Promise<void> {
         if (this.initialised.value && !force) return;
         if (this.loadPromise) return this.loadPromise;
@@ -43,7 +26,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
 
         this.loadPromise = (async () => {
             try {
-                this.rawModels.value = (await this.getModels()).map(this.transformModel);
+                this.rawModels.value = await this.getModels();
                 
                 try {
                     await this.onModelsLoaded();
@@ -86,7 +69,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
         options: ChatOptions
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
-    public abstract getModels(): Promise<Model[]>;
+    protected abstract getModels(): Promise<ModelInfo[]>;
 
     /**
      * Get the capabilities for a specific model.

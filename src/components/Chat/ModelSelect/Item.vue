@@ -5,7 +5,6 @@ import { computed, ref } from 'vue';
 import { BiBox, BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiHeart, BiLock, BiPencil, BiShow, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelSelect } from '@/stores/useModelSelect';
-import type { Model } from '@/providers/base/types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import type { LpCloudPricing } from '@/providers/lpcloud/types';
 
@@ -30,7 +29,7 @@ const providerMetadata = computed(() => props.model.info.providerMetadata);
 
 const actionMenuButton = ref<HTMLElement | null>(null);
 
-function setModel(e: MouseEvent, model: Model) {
+function setModel(e: MouseEvent, modelId: string) {
 	if (actionMenuButton.value && actionMenuButton.value.contains(e.target as Node)) return;
 
 	if (config.cloud.enabled && !cloudUserStore.isSignedIn) {
@@ -43,7 +42,7 @@ function setModel(e: MouseEvent, model: Model) {
 		return;
 	}
 
-	setModelInfo(model);
+	setModelInfo(modelId);
 }
 
 const listItemRef = ref<HTMLLIElement | null>(null);
@@ -110,12 +109,15 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 	<li 
 		v-if="layout === 'row'" 
 		class="relative group flex flex-row gap-3 ring-1 ring-base-500 ring-inset cursor-pointer p-3 hover:bg-base-600 transition-colors duration-dynamic rounded-lg overflow-x-hidden"
+		ref="listItemRef" 
 		:class="{
 			'bg-base-600': selected && !isCurrentModel,
 			'bg-base-600 ring-base-300!': isCurrentModel,
 			'opacity-50': providerMetadata?.provider === 'lpcloud' 
 				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
-		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
+		}"
+		:aria-selected="selected"
+		@click="setModel($event, model.info.id)">
 
 		<IconModel :name="model.info.id" class="size-10 min-w-10 p-1" />
 
@@ -209,12 +211,15 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 	<li 
 		v-else
 		class="relative group flex flex-col gap-2 ring-1 ring-base-500 ring-inset cursor-pointer p-2 hover:bg-base-600 transition-colors duration-dynamic rounded-lg overflow-x-visible"
+		ref="listItemRef" 
 		:class="{
 			'bg-base-600': selected && !isCurrentModel,
 			'bg-base-600 ring-base-300!': isCurrentModel,
 			'opacity-50': providerMetadata?.provider === 'lpcloud' 
-				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
-		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
+			&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
+		}" 
+		:aria-selected="selected"
+		@click="setModel($event, model.info.id)">
 
 		<div class="flex flex-col items-center">
             <IconModel :name="model.info.id" class="size-10 p-1" />

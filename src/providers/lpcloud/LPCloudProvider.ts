@@ -1,4 +1,4 @@
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "../base/types";
 import { lpCloudWrapper } from "./LPCloudWrapper";
 import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, LPCloudLLMProvider } from "../base/ProviderInterface";
@@ -8,6 +8,7 @@ import { appMessagesToLPCloud } from "./converters/appMessagesToLPCloud";
 import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 import useCloudUserStore from "@/stores/useCloudUserStore";
+import { useConfigStore } from "@/stores/config";
 
 
 export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider {
@@ -55,27 +56,35 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
         return chat(ollamaFormatMessages, abortSignal, options);
     }
     
-    public async getModels(): Promise<Model[]> {
+    public async getModels(): Promise<ModelInfo[]> {
+        const configStore = useConfigStore();
         const list = await lpCloudWrapper.list();
 
         return list.map((m) => {
+            const displayName = configStore.chat.modelRenames[m.model] || m.name;
+            const isHidden = configStore.chat.hiddenModels.includes(m.model);
+
             return {
-                name: m.name,
-                id: m.model,
-                subtitle: m.llamapenMetadata.creator,
-                capabilities: {
-                    supportsFunctionCalling: m.capabilities.includes('tools'),
-                    supportsReasoning: m.capabilities.includes('thinking'),
-                    supportsVision: m.capabilities.includes('vision'),
-                },
-                providerMetadata: {
-                    provider: 'lpcloud',
-                    data: {
-                        premium: m.llamapenMetadata.premium ?? false,
-                        priceTier: m.llamapenMetadata.priceTier,
-                        providerName: m.llamapenMetadata.creator,
-                        tags: m.llamapenMetadata.tags ?? [],
+                displayName,
+                hidden: isHidden,
+                info: {
+                    name: m.name,
+                    id: m.model,
+                    subtitle: m.llamapenMetadata.creator,
+                    capabilities: {
+                        supportsFunctionCalling: m.capabilities.includes('tools'),
+                        supportsReasoning: m.capabilities.includes('thinking'),
+                        supportsVision: m.capabilities.includes('vision'),
                     },
+                    providerMetadata: {
+                        provider: 'lpcloud',
+                        data: {
+                            premium: m.llamapenMetadata.premium ?? false,
+                            priceTier: m.llamapenMetadata.priceTier,
+                            providerName: m.llamapenMetadata.creator,
+                            tags: m.llamapenMetadata.tags ?? [],
+                        },
+                    }
                 }
             }
         });

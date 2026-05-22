@@ -1,20 +1,24 @@
 import { type LLMProvider } from "@/providers/base/ProviderInterface";
 import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderCheck";
-import type { ModelCapabilities } from "@/providers/base/types";
+import type { ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import type { Model } from "@/providers/base/types";
 import { useConfigStore } from "@/stores/config";
 import logger from "@/lib/logger";
 
 // Types
-// `ModelInfo` represents the provider + app-level info about a model. I.e.
-// the custom user-set name, and whether it's hidden in the UI. The `info`
-// property contains the actual info from the provider such as id, capabilities, etc.
+/** App-level info */
 export type ModelInfo = {
-    info: Model;
     displayName: string;
     hidden: boolean;
+    /** Provider-level info */
+    info: { 
+        name: string; // Pretty name
+        id: string;
+        subtitle: string;
+        capabilities: ModelCapabilities;
+        providerMetadata?: ProviderMetadata;
+    };
 }
 
 type ModelInfoResult = 
@@ -64,9 +68,6 @@ export function useProviderManager() {
 
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
-
-    const getModels = ((...args: Parameters<LLMProvider['getModels']>) =>
-        currentProvider.value.getModels(...args)) as LLMProvider['getModels'];
 
     const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
             currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
@@ -164,7 +165,6 @@ export function useProviderManager() {
         // Base
         loadModels,
         chat,
-        getModels,
         getModelCapabilities,
         generateChatTitle,
 

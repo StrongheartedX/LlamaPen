@@ -49,15 +49,6 @@ export type ModelCapabilities = {
 	supportsFunctionCalling: boolean;
 }
 
-// Shared app model
-export type Model = {
-	name: string; // Pretty name
-	id: string; // Internal identifier
-	subtitle: string;
-	capabilities: ModelCapabilities;
-	providerMetadata?: ProviderMetadata;
-}
-
 export type ProviderMetadata = 
 	| { provider: 'ollama', data: OllamaMetadata }
 	| { provider: 'lpcloud', data: LPCloudMetadata }

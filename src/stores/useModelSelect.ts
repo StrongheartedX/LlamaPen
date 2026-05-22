@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
-import type { Model, ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
+import type { ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 import useCloudUserStore from "./useCloudUserStore";
 
@@ -106,8 +106,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         return items;
     }
 
-    async function setModel(newModel: Model, skipUiUpdate: boolean = false) {
-        const newModelId = newModel.id;
+    async function setModel(newModelId: string, skipUiUpdate: boolean = false) {
         config.selectedModel = newModelId;
 
         if (!skipUiUpdate) {
