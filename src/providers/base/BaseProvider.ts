@@ -2,7 +2,6 @@ import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "./types";
 import type { ModelInfo } from "@/composables/useProviderManager";
-import { useConfigStore } from "@/stores/config";
 import logger from "@/lib/logger";
 
 export abstract class BaseProvider implements BaseLLMProvider {
@@ -43,15 +42,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
     }
 
     /**
-     * Hook for provider-specific logic after models are loaded with no errors.
-     * E.g. used in Ollama to fetch capabilites for each model.
-     */
-    protected onModelsLoaded(): Promise<void> | void {
-        // Override in subclasses if needed
-    }
-
-
-    /**
      * Run connectivity check to provider.
      */
     public abstract refreshConnection(): Promise<void>;
@@ -69,8 +59,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
         options: ChatOptions
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
-    protected abstract getModels(): Promise<ModelInfo[]>;
-
     /**
      * Get the capabilities for a specific model.
      * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
@@ -82,4 +70,18 @@ export abstract class BaseProvider implements BaseLLMProvider {
      * @param messages Messages to use as context for the chat title generation.
      */
     public abstract generateChatTitle(messages: ChatMessage[]): Promise<string>;
+
+    /**
+     * Hook for provider-specific logic after models are loaded with no errors.
+     * E.g. used in Ollama to fetch capabilites for each model.
+     */
+    protected onModelsLoaded(): Promise<void> | void {
+        // Override in subclasses if needed
+    }
+
+    /**
+     * Internal method to fetch models from provider and transform them info a
+     * common format.
+     */
+    protected abstract getModels(): Promise<ModelInfo[]>;
 }

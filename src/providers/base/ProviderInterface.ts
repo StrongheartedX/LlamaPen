@@ -10,24 +10,22 @@ export type ConnectionState = {
 }
 
 export interface BaseLLMProvider {
-    /**
-     * Pretty name of the provider.
-     */
     readonly name: string;
     readonly type: 'ollama' | 'lpcloud';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
+    /**
+     * Loads models from the provider and initialises capabilities.
+     * @param force When false, if models were already loaded before, ignore the reqest. 
+     * True overrides this and re-sends a request, aka refreshes.
+     */
+    loadModels(force: boolean): Promise<void>;
+
     /** 
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
     refreshConnection(): Promise<void>;
-
-    /**
-     * Loads models from the provider and initialises capabilities.
-     * @param force When false, if models were already loaded before, ignore the reqest. True overrides this and re-sends a request, aka refreshes.
-     */
-    loadModels(force: boolean): Promise<void | null>;
     
 
     /**
