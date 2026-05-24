@@ -14,7 +14,7 @@ import { isOllamaProvider } from "@/providers/utils/ProviderCheck";
 const config = useConfigStore();
 
 // State
-const { rawModels, loadModels, currentProvider, loadedModelIds } = useProviderManager();
+const { rawModels, loadModels, currentProvider } = useProviderManager();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
