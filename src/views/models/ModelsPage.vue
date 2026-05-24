@@ -74,7 +74,6 @@ async function setModelViewInfo(modelId: string) {
         selectedModel.value = {
             state: 'data',
             model: response,
-            isLoaded: loadedModelIds.value.has(modelId),
             type: 'ollama'
         };
     } else {
@@ -88,7 +87,6 @@ async function setModelViewInfo(modelId: string) {
         selectedModel.value = {
             state: 'data',
             model: foundModel,
-            isLoaded: loadedModelIds.value.has(modelId),
             type: 'generic',
         }
     }
