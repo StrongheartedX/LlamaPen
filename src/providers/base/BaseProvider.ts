@@ -1,14 +1,14 @@
 import { ref, type Ref } from "vue";
-import type { BaseLLMProvider } from "./ProviderInterface";
+import type { ConnectionState, LLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { ModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
-export abstract class BaseProvider implements BaseLLMProvider {
+export abstract class BaseProvider implements LLMProvider {
     abstract readonly name: string;
     abstract readonly type: 'ollama' | 'lpcloud';
-    abstract readonly connectionState: BaseLLMProvider['connectionState'];
+    abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
     protected readonly fetchedCapabilities = ref<Map<string, string[]>>(new Map());

@@ -9,7 +9,7 @@ export type ConnectionState = {
     lastChecked?: Date;
 }
 
-export interface BaseLLMProvider {
+export interface LLMProvider {
     readonly name: string;
     readonly type: 'ollama' | 'lpcloud';
     readonly connectionState: Reactive<ConnectionState>;
@@ -65,7 +65,7 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface MemoryManagedProvider extends BaseLLMProvider {
+export interface MemoryManagedProvider extends LLMProvider {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     
@@ -84,6 +84,6 @@ export interface MemoryManagedProvider extends BaseLLMProvider {
     unloadModel(modelId: string): Promise<boolean>;
 }
 
-export interface LPCloudLLMProvider extends BaseLLMProvider {
+export interface LPCloudLLMProvider extends LLMProvider {
     isSignedIn: boolean;
 }
