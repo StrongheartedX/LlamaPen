@@ -1,7 +1,9 @@
-import type { LLMProvider, LPCloudLLMProvider, OllamaLLMProvider } from "../base/ProviderInterface";
+import type { BaseLLMProvider } from "../base/ProviderInterface";
+import { LPCloudProvider } from "../lpcloud/LPCloudProvider";
+import { OllamaProvider } from "../ollama/OllamaProvider";
 
-export const isOllamaProvider = (provider: LLMProvider): provider is OllamaLLMProvider => 
-    provider.type === 'ollama';
+export const isOllamaProvider = (provider: BaseLLMProvider): provider is OllamaProvider => 
+    provider instanceof OllamaProvider;
 
-export const isLPCloudProvider = (provider: LLMProvider): provider is LPCloudLLMProvider => 
-    provider.type === 'lpcloud';
+export const isLPCloudProvider = (provider: BaseLLMProvider): provider is LPCloudProvider => 
+    provider instanceof LPCloudProvider

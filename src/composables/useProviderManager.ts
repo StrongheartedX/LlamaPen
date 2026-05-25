@@ -1,4 +1,4 @@
-import { type LLMProvider } from "@/providers/base/ProviderInterface";
+import { type BaseLLMProvider } from "@/providers/base/ProviderInterface";
 import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderCheck";
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
@@ -66,14 +66,14 @@ export function useProviderManager() {
         currentProvider.value.loadModels(true);
     }
 
-    const chat = ((...args: Parameters<LLMProvider['chat']>) =>
-        currentProvider.value.chat(...args)) as LLMProvider['chat'];
+    const chat = ((...args: Parameters<BaseLLMProvider['chat']>) =>
+        currentProvider.value.chat(...args)) as BaseLLMProvider['chat'];
 
-    const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
-            currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
+    const getModelCapabilities = ((...args: Parameters<BaseLLMProvider['getModelCapabilities']>) =>
+            currentProvider.value.getModelCapabilities(...args)) as BaseLLMProvider['getModelCapabilities'];
 
-    const generateChatTitle = ((...args: Parameters<LLMProvider['generateChatTitle']>) =>
-            currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
+    const generateChatTitle = ((...args: Parameters<BaseLLMProvider['generateChatTitle']>) =>
+            currentProvider.value.generateChatTitle(...args)) as BaseLLMProvider['generateChatTitle'];
 
     
     // Ollama-specific

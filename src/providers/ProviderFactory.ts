@@ -1,17 +1,17 @@
 import logger from "@/lib/logger";
-import type { LLMProvider } from "./base/ProviderInterface";
+import type { BaseLLMProvider } from "./base/ProviderInterface";
 import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
 
 class ProviderFactory {
-    private providers = new Map<string, LLMProvider>();
+    private providers = new Map<string, BaseLLMProvider>();
     private selectedProvider = localStorage.getItem('selectedProvider') || "ollama";
 
-    register(name: string, provider: LLMProvider) {
+    register(name: string, provider: BaseLLMProvider) {
         this.providers.set(name, provider);
     }
 
-    getProviders(): Map<string, LLMProvider> {
+    getProviders(): Map<string, BaseLLMProvider> {
         return this.providers;
     }
 
@@ -31,7 +31,7 @@ class ProviderFactory {
         return this.selectedProvider;
     }
 
-    getSelectedProvider(): LLMProvider {
+    getSelectedProvider(): BaseLLMProvider {
         // For now, always return OllamaProvider
         const provider = this.providers.get(this.selectedProvider);
         if (!provider) {

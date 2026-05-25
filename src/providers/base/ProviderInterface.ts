@@ -87,5 +87,3 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
 export interface LPCloudLLMProvider extends BaseLLMProvider {
     isSignedIn: boolean;
 }
-
-export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
