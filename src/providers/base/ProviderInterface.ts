@@ -65,7 +65,7 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface OllamaLLMProvider extends BaseLLMProvider {
+export interface MemoryManagedProvider extends BaseLLMProvider {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     

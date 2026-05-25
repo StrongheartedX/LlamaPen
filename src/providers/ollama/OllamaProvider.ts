@@ -3,7 +3,7 @@ import type { ChatIteratorChunk, ChatOptions } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
-import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
+import type { ConnectionState, MemoryManagedProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/config";
 import type { ModelInfo } from "@/composables/useProviderManager";
@@ -12,7 +12,7 @@ import type { ModelAttributes } from "@/components/ModelsPage/types";
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
+export class OllamaProvider extends BaseProvider implements MemoryManagedProvider {
     readonly name = "Ollama";
     readonly type = 'ollama';
 
