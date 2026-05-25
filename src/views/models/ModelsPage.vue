@@ -105,7 +105,7 @@ async function setModelViewInfo(modelId: string) {
             class="flex items-center justify-center" >
             Error loading model details: <code>{{ selectedModel.message }}</code>
         </UIViewerContainer>
-        <ModelsPageViewerOllama 
+        <ModelsPageViewer
             v-else
             :modelFromParams 
             :selectedModel />

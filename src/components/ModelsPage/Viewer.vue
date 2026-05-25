@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ModelViewInfo } from '../types';
+import type { ModelViewInfo } from './types';
 
 const props = defineProps<{
     modelFromParams: string | null,
