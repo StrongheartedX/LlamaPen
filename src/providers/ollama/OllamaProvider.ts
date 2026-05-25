@@ -1,5 +1,5 @@
 import { chat, generateChatTitle } from "./helpers";
-import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
@@ -7,6 +7,7 @@ import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterfa
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/config";
 import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
@@ -88,11 +89,7 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
                     name: m.name,
                     id: m.model,
                     subtitle: m.details.parameter_size,
-                    capabilities: {
-                        supportsFunctionCalling: false,
-                        supportsReasoning: false,
-                        supportsVision: false,
-                    },
+                    capabilities: [],
                     providerMetadata: {
                         provider: 'ollama',
                         data: {
@@ -108,20 +105,24 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
         });
     }
 
-    public getModelCapabilities(modelId: string): ModelCapabilities {
-        return this.fetchedCapabilities.value.get(modelId) ?? {
-            supportsFunctionCalling: false,
-            supportsReasoning: false,
-            supportsVision: false,
-        };
+    public getModelCapabilities(modelId: string): string[] {
+        return this.fetchedCapabilities.value.get(modelId) ?? [];
     }
 
-    public async getModelAttributes(modelId: string): Promise<Record<string, string>> {
+    public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
         const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
-        if (error) return { 'Error': 'Could not fetch model details.' };
+        if (error) throw new Error('Could not fetch model details.');
+
+        if (!this.fetchedCapabilities.value.has(modelId)) {
+            this.fetchedCapabilities.value.set(modelId, modelInfo.capabilities);
+        }
 
         return {
             'License': modelInfo.license,
+            'Modelfile': modelInfo.modelfile,
+            'Template': modelInfo.template,
+            'Details': modelInfo.details as unknown as Record<string, unknown>,
+            'Model Info': modelInfo.model_info as unknown as Record<string, unknown>,
         }
     }
 
@@ -147,24 +148,14 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
         return await ollamaWrapper.unloadFromMemory(modelId);
     }
 
-    private async fetchModelCapabilities(modelId: string): Promise<ModelCapabilities> {
+    private async fetchModelCapabilities(modelId: string): Promise<string[]> {
         // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
 
         const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
         if (error || !modelInfo) {
-            return {
-                supportsFunctionCalling: false,
-                supportsReasoning: false,
-                supportsVision: false,
-            };
+            return [];
         }
 
-        const capabilities = modelInfo.capabilities;
-
-        return {
-            supportsReasoning: capabilities.includes('thinking'),
-            supportsVision: capabilities.includes('vision'),
-            supportsFunctionCalling: capabilities.includes('tools'),
-        }
+        return modelInfo.capabilities;
     }
 }

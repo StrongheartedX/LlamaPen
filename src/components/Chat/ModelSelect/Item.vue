@@ -168,13 +168,13 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 					</template>
 					<!-- Capability tags -->
 					<div 
-						v-if="modelCapabilities.supportsVision"
+						v-if="modelCapabilities.includes('vision')"
 						class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 						title="Vision - can process images">
 						<BiShow class="text-capability-vision size-4" />
 					</div>
 					<div 
-						v-if="modelCapabilities.supportsReasoning"
+						v-if="modelCapabilities.includes('reasoning')"
 						class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 						:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 							? 'Locked reasoning - always uses reasoning capabilities' 
@@ -185,7 +185,7 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 							class="text-capability-reasoning size-4" />
 					</div>
 					<div 
-						v-if="modelCapabilities.supportsFunctionCalling"
+						v-if="modelCapabilities.includes('tools')"
 						class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 						title="Tools - can use external tools">
 						<BiWrench class="text-capability-tools size-4" />
@@ -253,13 +253,13 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 				</template>
 				<!-- Capability tags -->
 				<div 
-					v-if="modelCapabilities.supportsVision"
+					v-if="modelCapabilities.includes('vision')"
 					class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 					title="Vision - can process images">
 					<BiShow class="text-capability-vision size-4" />
 				</div>
 				<div 
-					v-if="modelCapabilities.supportsReasoning"
+					v-if="modelCapabilities.includes('reasoning')"
 					class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 					:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 						? 'Locked reasoning - always uses reasoning capabilities' 
@@ -270,7 +270,7 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 						class="text-capability-reasoning size-4" />
 				</div>
 				<div 
-					v-if="modelCapabilities.supportsFunctionCalling"
+					v-if="modelCapabilities.includes('tools')"
 					class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 					title="Tools - can use external tools">
 					<BiWrench class="text-capability-tools size-4" />

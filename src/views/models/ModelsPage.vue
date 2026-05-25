@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ModelViewInfo } from '@/components/ModelsPage/types';
+import { BiLoaderAlt } from 'vue-icons-plus/bi';
 
 // todo(provider-separation): organise the components for this by provider,
 // e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.
 
-const config = useConfigStore();
-
 // State
-const { rawModels, loadModels } = useProviderManager();
+const { rawModels, loadModels, getModelAttributes, getModelInfo, getModelCapabilities } = useProviderManager();
+
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -34,7 +33,7 @@ const refreshModelList = async () => await loadModels(true);
 // Hooks
 onMounted(async () => {
     setPageTitle('Models');
-    refreshModelList();
+    await refreshModelList();
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
@@ -60,13 +59,27 @@ watch(router.currentRoute, () => {
 async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
 
-    const attrs = await useProviderManager().getModelAttributes(modelId);
+    try {
+        const attributes = await getModelAttributes(modelId);
 
-    selectedModel.value = {
-        state: 'data',
-        model: attrs,
-        type: 'ollama'
-    };
+        if (modelFromParams.value !== modelId) return; // user changed models
+
+        const modelName = getModelInfo(modelId).data?.displayName || modelId;
+        const capabilities = getModelCapabilities(modelId);
+
+        selectedModel.value = {
+            state: 'data',
+            attributes,
+            modelId,
+            modelName,
+            capabilities,
+        };
+    } catch (e) {
+        selectedModel.value = {
+            state: 'error',
+            message: e instanceof Error ? e.message : 'Unknown error',
+        };
+    }
 }
 
 </script>
@@ -78,11 +91,19 @@ async function setModelViewInfo(modelId: string) {
             @refresh-model-list="refreshModelList" />
 
         <UIViewerContainer 
-            v-if="selectedModel.state === 'unselected' && modelFromParams !== 'downloads'" 
+            v-if="selectedModel.state === 'unselected'" 
             class="flex items-center justify-center text-xl" >
-            {{ config.cloud.enabled ?
-                'Model management is only available without API mode.' :
-                'Select a model to view its details, or download a new model.' }}
+            Select a model from the sidebar to view its details.
+        </UIViewerContainer>
+        <UIViewerContainer
+            v-else-if="selectedModel.state === 'loading'"
+            class="flex items-center justify-center" >
+            <BiLoaderAlt class="animate-spin" />
+        </UIViewerContainer>
+        <UIViewerContainer
+            v-else-if="selectedModel.state === 'error'"
+            class="flex items-center justify-center" >
+            Error loading model details: <code>{{ selectedModel.message }}</code>
         </UIViewerContainer>
         <ModelsPageViewerOllama 
             v-else

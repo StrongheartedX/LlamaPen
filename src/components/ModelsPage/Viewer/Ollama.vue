@@ -1,81 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import DOMPurify from 'dompurify';
-import { useConfigStore } from '@/stores/config';
 import type { ModelViewInfo } from '../types';
-import type { ShowResponse, ModelDetails } from 'ollama/browser';
-
-const config = useConfigStore();
-
-const cloudEnabled = computed(() => config.cloud.enabled);
 
 const props = defineProps<{
     modelFromParams: string | null,
-    selectedModel: ModelViewInfo,
+    selectedModel: Extract<ModelViewInfo, { state: 'data' }>,
 }>();
-
-// Model actions
-function sanitizeSection(text: string | null) {
-    return DOMPurify.sanitize(text ?? '')
-}
-
-function getModelValue<T>(
-    fallback: T,
-    loadingValue: T,
-    extractor: (model: ShowResponse & { model_info: Record<string, any> }) => T
-): T {
-
-    if (props.selectedModel.state === 'unselected'  || props.selectedModel.state === 'error') return fallback;
-    if (props.selectedModel.state === 'loading') return loadingValue;
-    
-    if (props.selectedModel.type === 'ollama') {
-        return extractor(props.selectedModel.model);
-    }
-    
-    return fallback;
-}
-
-const modelName = computed<string>(() =>
-    getModelValue(props.modelFromParams || '', 'Loading...', m => m.model_info['general.basename'] || props.modelFromParams || '')
-);
-
-const modelCapabilites = computed(() =>
-    getModelValue([], [], m => m.capabilities)
-);
-
-const modelLicense = computed(() =>
-    getModelValue('', 'Loading license...', m => m.license)
-);
-
-const modelModelfile = computed(() =>
-    getModelValue('', 'Loading modelfile...', m => m.modelfile)
-);
-
-const modelTemplate = computed(() =>
-    getModelValue('', 'Loading template...', m => m.template)
-);
-
-const modelDetails = computed(() =>
-    getModelValue<ModelDetails>({
-        families: [],
-        family: '',
-        format: '',
-        parameter_size: '',
-        parent_model: '',
-        quantization_level: '',
-    }, {
-        families: ['Loading...'],
-        family: 'Loading...',
-        format: 'Loading...',
-        parameter_size: 'Loading...',
-        parent_model: 'Loading...',
-        quantization_level: 'Loading...',
-    }, m => m.details)
-);
-
-const modelInfo = computed(() =>
-    getModelValue<Record<string, any>>({}, {}, m => m.model_info)
-);
 </script>
 
 <template>
@@ -83,26 +12,27 @@ const modelInfo = computed(() =>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
-            <span class="text-base-100 font-bold mr-2">{{ modelName }}</span>
+            <span class="text-base-100 font-bold mr-2">{{ selectedModel.modelName }}</span>
             <br>
             <span class="text-base-200 text-xl">{{ modelFromParams }}</span>
         </div>
 
-        <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
-        <ModelsPageCapabilitiesList
-            v-else
-            :model-capabilities="modelCapabilites" />
+        <ModelsPageCapabilitiesList :model-capabilities="selectedModel.capabilities" />
 
         <div class="relative">
-            <div v-if="cloudEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">
-                Info unavailable in Cloud mode.
-            </div>
             <h2 class="text-xl md:text-3xl pt-4 pb-2 text-base-100">Info</h2>
-            <ModelsPageInfoSection title="License" :content="sanitizeSection(modelLicense)" />
-            <ModelsPageInfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
-            <ModelsPageInfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
-            <ModelsPageInfoSection title="Details" :kv-list="(modelDetails as Record<string, any>)" />
-            <ModelsPageInfoSection title="Model Info" :kv-list="modelInfo" />
+            <template
+                v-for="[key, value] in Object.entries(selectedModel.attributes)"
+                :key>
+                <ModelsPageInfoSection
+                    v-if="typeof value === 'string'"
+                    :title="key"
+                    :content="value" />
+                <ModelsPageInfoSection
+                    v-else-if="typeof value === 'object' && value !== null"
+                    :title="key"
+                    :kv-list="value as Record<string, unknown>" />
+            </template>
         </div>
     </UIViewerContainer>
 </template>

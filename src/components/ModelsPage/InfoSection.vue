@@ -34,14 +34,20 @@ function formatValue(value: unknown | null) {
         </div>
 
         <div v-if="showingFull" class="p-2 flex flex-col gap-2">
-            <div v-if="kvList" v-for="(value, key) in kvList" class="flex flex-row">
+            <div 
+                v-if="kvList" 
+                v-for="(value, key) in kvList" 
+                class="flex flex-row">
                 <div class="bg-base-600 p-2 rounded-l-lg">{{ key }}</div>
                 <div class="bg-primary text-base-800 p-2 rounded-r-lg" :class="{ 'italic': value === null || (typeof value === 'string' && value.length === 0) }">{{ formatValue(value) }}
                 </div>
             </div>
 
-            <!-- although the content should already be sanitized by here, check to make sure if you are implementing it somewhere -->
-            <article v-else class="prose prose-app! dark:prose-invert w-full min-w-full whitespace-pre-wrap break-all" v-html="content"></article>
+            <article 
+                v-else 
+                class="prose prose-app! dark:prose-invert w-full min-w-full whitespace-pre-wrap break-all">
+                {{ content }}
+            </article>
         </div>
     </div>
 </template>
