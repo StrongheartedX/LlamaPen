@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
-
 defineProps<{
-    title: string;
     content?: string;
     kvList?: Record<string, unknown | null> | null;
 }>();
-
-const showingFull = ref<boolean>(false);
 
 function formatValue(value: unknown | null) {
     if (value === null) {
@@ -25,29 +19,27 @@ function formatValue(value: unknown | null) {
 </script>
 
 <template>
-    <div class="w-full mb-6">
-        <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-base-800 hover:bg-base-700 hover:text-base-100 p-2 rounded-lg gap-2"
-            @click="showingFull = !showingFull">
-            <span class="text-lg md:text-2xl w-full select-none">{{ title }}</span>
-            <BiChevronUp class="h-full w-8 p-1" v-if="showingFull" />
-            <BiChevronDown class="h-full w-8 p-1" v-else />
-        </div>
-
-        <div v-if="showingFull" class="p-2 flex flex-col gap-2">
-            <div 
-                v-if="kvList" 
+    <div class="w-full p-2 mb-6 flex flex-col gap-2">
+        <template v-if="kvList">
+            <div  
                 v-for="(value, key) in kvList" 
-                class="flex flex-row">
-                <div class="bg-base-600 p-2 rounded-l-lg">{{ key }}</div>
-                <div class="bg-primary text-base-800 p-2 rounded-r-lg" :class="{ 'italic': value === null || (typeof value === 'string' && value.length === 0) }">{{ formatValue(value) }}
+                :key
+                class="flex flex-row text-sm font-medium">
+                <div class="bg-base-700 text-primary p-2 rounded-l-lg">{{ key }}</div>
+                <div 
+                    class="bg-base-800 text-base-300 p-2 rounded-r-lg" 
+                    :class="{ 
+                        'italic font-normal text-base-400': value === null || (typeof value === 'string' && value.length === 0) 
+                    }">
+                    {{ formatValue(value) }}
                 </div>
             </div>
+        </template>
 
-            <article 
-                v-else 
-                class="prose prose-app! dark:prose-invert w-full min-w-full whitespace-pre-wrap break-all">
-                {{ content }}
-            </article>
-        </div>
+        <article 
+            v-else
+            class="prose prose-app! dark:prose-invert w-full min-w-full whitespace-pre-wrap break-all">
+            {{ content }}
+        </article>
     </div>
 </template>
