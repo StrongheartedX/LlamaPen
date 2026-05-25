@@ -2,7 +2,6 @@ import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
-import type { ShowResponse } from "ollama/browser";
 import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
@@ -117,6 +116,15 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
         };
     }
 
+    public async getModelAttributes(modelId: string): Promise<Record<string, string>> {
+        const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
+        if (error) return { 'Error': 'Could not fetch model details.' };
+
+        return {
+            'License': modelInfo.license,
+        }
+    }
+
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return generateChatTitle(messages);
     }
@@ -137,16 +145,6 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 
     async unloadModel(modelId: string): Promise<boolean> {
         return await ollamaWrapper.unloadFromMemory(modelId);
-    }
-
-
-    async getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }> {
-        const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
-        if (error) {
-            return { data: null, error: error.message };
-        }
-
-        return { data: modelInfo, error: null };
     }
 
     private async fetchModelCapabilities(modelId: string): Promise<ModelCapabilities> {

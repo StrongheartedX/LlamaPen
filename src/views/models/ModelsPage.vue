@@ -6,7 +6,6 @@ import { computed, onMounted, ref, watch } from 'vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ModelViewInfo } from '@/components/ModelsPage/types';
-import { isOllamaProvider } from "@/providers/utils/ProviderCheck";
 
 // todo(provider-separation): organise the components for this by provider,
 // e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.
@@ -14,7 +13,7 @@ import { isOllamaProvider } from "@/providers/utils/ProviderCheck";
 const config = useConfigStore();
 
 // State
-const { rawModels, loadModels, currentProvider } = useProviderManager();
+const { rawModels, loadModels } = useProviderManager();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -28,8 +27,6 @@ const modelFromParams = computed<string | null>(() => {
     
     return null;
 });
-
-const isOllama = computed(() => isOllamaProvider(currentProvider.value));
 
 // Helpers 
 const refreshModelList = async () => await loadModels(true);
@@ -63,33 +60,13 @@ watch(router.currentRoute, () => {
 async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
 
-    if (isOllama.value) {
-        const { data: response, error: infoError } = await useProviderManager().getModelDetails(modelId);
+    const attrs = await useProviderManager().getModelAttributes(modelId);
 
-        if (infoError || !response) {
-            selectedModel.value = { state: 'error', message: infoError }
-            return;
-        }
-
-        selectedModel.value = {
-            state: 'data',
-            model: response,
-            type: 'ollama'
-        };
-    } else {
-        const foundModel = rawModels.value.find(item => item.info.id === modelId);
-
-        if (!foundModel) {
-            selectedModel.value = { state: 'error', message: 'Model not found.' };
-            return;
-        }
-
-        selectedModel.value = {
-            state: 'data',
-            model: foundModel,
-            type: 'generic',
-        }
-    }
+    selectedModel.value = {
+        state: 'data',
+        model: attrs,
+        type: 'ollama'
+    };
 }
 
 </script>
@@ -108,12 +85,8 @@ async function setModelViewInfo(modelId: string) {
                 'Select a model to view its details, or download a new model.' }}
         </UIViewerContainer>
         <ModelsPageViewerOllama 
-            v-else-if="isOllama"
-            :modelFromParams 
-            :selectedModel />
-        <ModelsPageViewerGeneric
             v-else
-            :modelFromParams
+            :modelFromParams 
             :selectedModel />
     </div>
 </template>

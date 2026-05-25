@@ -50,6 +50,12 @@ export interface BaseLLMProvider {
      */
     getModelCapabilities(modelId: string): ModelCapabilities;
 
+    /**
+     * Get the attributes of a model. E.g. license, modelfile, etc.
+     * @param modelId Model to get attributes for.
+     */
+    getModelAttributes(modelId: string): Promise<Record<string, string>>;
+
 
     /**
      * Generates a chat title based on the provided chat messages. Uses JSON-structure outputs from model.
@@ -63,11 +69,6 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     
-    /**
-     * @param modelId The model to get details for.
-     */
-    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
-
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.

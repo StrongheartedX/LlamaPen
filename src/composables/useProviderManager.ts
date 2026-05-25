@@ -98,11 +98,8 @@ export function useProviderManager() {
         logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
     };
 
-    const getModelDetails = (modelId: string) => {
-        if (!isOllamaProvider(currentProvider.value)) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support model details`);
-        }
-        return currentProvider.value.getModelDetails(modelId);
+    const getModelAttributes = (modelId: string) => {
+        return currentProvider.value.getModelAttributes(modelId);
     };
 
     // Model Info utils
@@ -167,13 +164,13 @@ export function useProviderManager() {
         chat,
         getModelCapabilities,
         generateChatTitle,
+        getModelAttributes,
 
         // Ollama-specific
         loadedModelIds,
         loadModelIntoMemory,
         unloadModel,
         refreshLoadedModels,
-        getModelDetails,
 
         // Get model info
         getModelInfo,

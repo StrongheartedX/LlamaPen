@@ -65,6 +65,18 @@ export abstract class BaseProvider implements BaseLLMProvider {
      */
     public abstract getModelCapabilities(modelId: string): ModelCapabilities;
 
+    public async getModelAttributes(modelId: string): Promise<Record<string, string>> {
+        const model = this.rawModels.value.find(m => m.info.id === modelId);
+        if (!model) {
+            logger.warn(`getModelAttributes: Model ${modelId} not found in provider ${this.name}`);
+            return {};
+        }
+
+        return {
+            'ID': '(example tab) ' + model.info.id,
+        };
+    }
+
     /**
      * Generate the title to a chat using a provider's model.
      * @param messages Messages to use as context for the chat title generation.

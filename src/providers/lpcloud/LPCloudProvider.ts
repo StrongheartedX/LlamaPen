@@ -98,6 +98,15 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
         };
     }
 
+    public async getModelAttributes(modelId: string): Promise<Record<string, string>> {
+        const model = this.rawModels.value.find(m => m.info.id === modelId);
+        if (!model) return {};
+
+        return {
+            'ID': model.info.id + " example field. ",
+        };
+    }
+
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return await helpers.generateChatTitle(messages);
     }
