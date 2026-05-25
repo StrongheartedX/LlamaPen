@@ -1,6 +1,6 @@
 import { type LLMProvider } from "@/providers/base/ProviderInterface";
 import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderCheck";
-import type { ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
+import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
 import { useConfigStore } from "@/stores/config";
@@ -16,7 +16,7 @@ export type ModelInfo = {
         name: string; // Pretty name
         id: string;
         subtitle: string;
-        capabilities: ModelCapabilities;
+        capabilities: string[];
         providerMetadata?: ProviderMetadata;
     };
 }
@@ -98,11 +98,8 @@ export function useProviderManager() {
         logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
     };
 
-    const getModelDetails = (modelId: string) => {
-        if (!isOllamaProvider(currentProvider.value)) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support model details`);
-        }
-        return currentProvider.value.getModelDetails(modelId);
+    const getModelAttributes = (modelId: string) => {
+        return currentProvider.value.getModelAttributes(modelId);
     };
 
     // Model Info utils
@@ -133,12 +130,8 @@ export function useProviderManager() {
             }
         });
 
-    const selectedModelCapabilities = computed<ModelCapabilities>(() => {
-        if (!selectedModelInfo.value.exists) return {
-            supportsFunctionCalling: false,
-            supportsReasoning: false,
-            supportsVision: false
-        };
+    const selectedModelCapabilities = computed<string[]>(() => {
+        if (!selectedModelInfo.value.exists) return [];
 
         return getModelCapabilities(selectedModelInfo.value.data.info.id);
     });
@@ -167,13 +160,13 @@ export function useProviderManager() {
         chat,
         getModelCapabilities,
         generateChatTitle,
+        getModelAttributes,
 
         // Ollama-specific
         loadedModelIds,
         loadModelIntoMemory,
         unloadModel,
         refreshLoadedModels,
-        getModelDetails,
 
         // Get model info
         getModelInfo,

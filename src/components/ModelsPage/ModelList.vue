@@ -158,7 +158,7 @@ const hideAll = () => {
     refreshModelList();
 };
 
-const showProprietaryModels = ref(cloudUserStore.userInfo.options.showProprietaryModels);
+const showProprietaryModels = computed(() => cloudUserStore.userInfo.options.showProprietaryModels);
 
 const searchQuery = ref('');
 

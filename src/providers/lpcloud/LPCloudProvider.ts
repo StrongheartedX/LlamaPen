@@ -1,4 +1,4 @@
-import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions } from "../base/types";
 import { lpCloudWrapper } from "./LPCloudWrapper";
 import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, LPCloudLLMProvider } from "../base/ProviderInterface";
@@ -9,6 +9,7 @@ import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 import useCloudUserStore from "@/stores/useCloudUserStore";
 import { useConfigStore } from "@/stores/config";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 
 export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider {
@@ -71,11 +72,7 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
                     name: m.name,
                     id: m.model,
                     subtitle: m.llamapenMetadata.creator,
-                    capabilities: {
-                        supportsFunctionCalling: m.capabilities.includes('tools'),
-                        supportsReasoning: m.capabilities.includes('thinking'),
-                        supportsVision: m.capabilities.includes('vision'),
-                    },
+                    capabilities: m.capabilities,
                     providerMetadata: {
                         provider: 'lpcloud',
                         data: {
@@ -90,11 +87,38 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
         });
     }
 
-    public getModelCapabilities(modelId: string): ModelCapabilities {
-        return this.fetchedCapabilities.value.get(modelId) ?? {
-            supportsFunctionCalling: false,
-            supportsReasoning: false,
-            supportsVision: false,
+    public getModelCapabilities(modelId: string): string[] {
+        return this.fetchedCapabilities.value.get(modelId) || [];
+    }
+
+    public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
+        const model = this.rawModels.value.find(m => m.info.id === modelId);
+        if (!model || model.info.providerMetadata?.provider !== 'lpcloud') return {};
+
+        const priceMap = {
+            0: 'Very Low',
+            1: 'Low',
+            2: 'Medium',
+            3: 'High',
+            4: 'Very High',
+        };
+
+        const reasoningMode = (() => {
+            if (model.info.providerMetadata.data.tags?.includes('alwaysReasons')) return 'Always reasons';
+            if (model.info.capabilities.includes('thinking')) return 'Toggleable';
+            return 'None';
+        })();
+
+        return {
+            'Metadata': {
+                'Provider': model.info.providerMetadata.data.providerName,
+                'Premium': model.info.providerMetadata.data.premium ? 'Yes' : 'No',
+                'Price tier': priceMap[model.info.providerMetadata.data.priceTier] || 'Unknown',
+            },
+            'Tags': {
+                'Openness': model.info.providerMetadata.data.tags?.includes('closedSource') ? 'Closed-source' : 'Open-source',
+                'Reasoning mode': reasoningMode,
+            }
         };
     }
 

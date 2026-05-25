@@ -1,7 +1,7 @@
-import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "./types";
-import type { ShowResponse } from "ollama/browser";
+import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
 import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
     status: 'connected' | 'disconnected' | 'checking' | 'error';
@@ -48,7 +48,13 @@ export interface BaseLLMProvider {
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): ModelCapabilities;
+    getModelCapabilities(modelId: string): string[];
+
+    /**
+     * Get the attributes of a model. E.g. license, modelfile, etc.
+     * @param modelId Model to get attributes for.
+     */
+    getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
 
     /**
@@ -63,11 +69,6 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     
-    /**
-     * @param modelId The model to get details for.
-     */
-    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
-
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.

@@ -1,8 +1,9 @@
 import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
-import type { ChatIteratorChunk, ChatOptions, ModelCapabilities } from "./types";
+import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { ModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export abstract class BaseProvider implements BaseLLMProvider {
     abstract readonly name: string;
@@ -10,7 +11,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
     abstract readonly connectionState: BaseLLMProvider['connectionState'];
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
-    protected readonly fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
+    protected readonly fetchedCapabilities = ref<Map<string, string[]>>(new Map());
     
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
@@ -63,7 +64,9 @@ export abstract class BaseProvider implements BaseLLMProvider {
      * Get the capabilities for a specific model.
      * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
      */
-    public abstract getModelCapabilities(modelId: string): ModelCapabilities;
+    public abstract getModelCapabilities(modelId: string): string[];
+
+    public abstract getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
     /**
      * Generate the title to a chat using a provider's model.

@@ -43,12 +43,6 @@ export type ChatOptions = {
 	reasoningEnabled?: boolean;
 }
 
-export type ModelCapabilities = {
-	supportsReasoning: boolean;
-	supportsVision: boolean;
-	supportsFunctionCalling: boolean;
-}
-
 export type ProviderMetadata = 
 	| { provider: 'ollama', data: OllamaMetadata }
 	| { provider: 'lpcloud', data: LPCloudMetadata }
