@@ -83,7 +83,7 @@ const selectActions: MenuEntry[] = [
 		type: 'text',
 		text: 'Manage Model',
 		icon: BiDotsHorizontalRounded,
-		onClick: () => router.push(`/models/${props.model.info.id}`)
+		onClick: () => router.push(`/models/installed/${props.model.info.id}`)
 	}
 ];
 
