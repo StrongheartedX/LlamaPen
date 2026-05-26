@@ -11,7 +11,7 @@ export type ConnectionState = {
 
 export interface LLMProvider {
     readonly name: string;
-    readonly type: 'ollama' | 'lpcloud';
+    readonly type: 'ollama' | 'lpcloud' | 'openai';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 

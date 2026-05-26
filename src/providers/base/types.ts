@@ -46,6 +46,7 @@ export type ChatOptions = {
 export type ProviderMetadata = 
 	| { provider: 'ollama', data: OllamaMetadata }
 	| { provider: 'lpcloud', data: LPCloudMetadata }
+	| { provider: 'openai', data: OpenAIMetadata }
 
 export type OllamaMetadata = {
 	size: number;
@@ -60,4 +61,9 @@ export type LPCloudMetadata = {
 	priceTier: LpCloudPricing;
 	premium: boolean;
 	tags?: string[]
+}
+
+export type OpenAIMetadata = {
+	created: Date;
+	ownedBy: string;
 }
