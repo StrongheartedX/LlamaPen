@@ -1,14 +1,20 @@
 import type { ModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive } from "vue";
-import type { ConnectionState } from "../base/ProviderInterface";
+import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
 import type { ChatOptions, ChatIteratorChunk } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
 import { chatHelper } from "./chatHelper";
 
-export class OpenAIProvider extends BaseProvider {
-    readonly name = "OpenAI";
+type OpenAIConfig = {
+    name: string;
+    apiKey: string;
+    baseURL: string;
+}
+
+export class OpenAIProvider extends BaseProvider implements ConfigurableProvider<OpenAIConfig> {
+    readonly name: string;
     readonly type = 'openai';
 
     readonly rawModels: Ref<ModelInfo[], ModelInfo[]> = ref([]);
@@ -21,12 +27,17 @@ export class OpenAIProvider extends BaseProvider {
 
     private client: OpenAI;
 
-    constructor(baseURL: string, apiKey: string) {
+    config: OpenAIConfig;
+
+    constructor(config: OpenAIConfig) {
         super();
+
+        this.name = config.name;
+        this.config = config;
         
         this.client = new OpenAI({
-            apiKey,
-            baseURL,
+            apiKey: this.config.apiKey,
+            baseURL: this.config.baseURL,
             dangerouslyAllowBrowser: true,
         });
     }

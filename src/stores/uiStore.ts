@@ -3,13 +3,12 @@ import { ref } from "vue";
 import { useConfigStore } from "./config";
 import { useProviderManager } from "@/composables/useProviderManager";
 
-const { rawModels } = useProviderManager();
-
 /**
  * UI-related things that only affect the clientside. State and functions for updating things like clientside custom model names.
  */
 const useUIStore = defineStore('uiStore', () => {
     const chatIsScrollingDown = ref(true);
+    const { rawModels } = useProviderManager();
 
     /** Set a model hidden for the user. */
     function setModelHidden(modelId: string | null, setHidden: boolean) {

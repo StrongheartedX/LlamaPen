@@ -5,6 +5,8 @@ import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
 import { useConfigStore } from "@/stores/config";
 import logger from "@/lib/logger";
+import { OpenAIProvider } from "@/providers/openai/OpenAIProvider";
+import { OllamaProvider } from "@/providers/ollama/OllamaProvider";
 
 // Types
 /** App-level info */
@@ -31,6 +33,28 @@ export function useProviderManager() {
     // All providers
     const allProviders = computed(() => providerFactory.getProviders());
     const setActiveProvider = (providerKey: string) => providerFactory.setSelectedProvider(providerKey);
+
+    const registerProvider = (key: string, type: Exclude<LLMProvider['type'], 'lpcloud'>) => {
+        if (allProviders.value.has(key)) {
+            logger.warn(`Provider with key '${key}' is already registered, skipping`);
+            return;
+        }
+
+        switch (type) {
+            case 'ollama':
+                providerFactory.register(key, new OllamaProvider());
+                break;
+            case 'openai':
+                providerFactory.register(key, new OpenAIProvider({
+                    name: 'OpenAI',
+                    baseURL: 'https://api.openai.com/v1',
+                    apiKey: 'placeholder',
+                }));
+                break;
+            default:
+                logger.error(`Invalid provider type '${type}' for provider with key '${key}'`);
+        }
+    }
 
     // ----------------
     // Current provider
@@ -139,6 +163,7 @@ export function useProviderManager() {
     return {
         allProviders,
         setActiveProvider,
+        registerProvider,
 
         currentProvider,
         currentProviderId,

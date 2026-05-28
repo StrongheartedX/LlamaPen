@@ -8,14 +8,21 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import router from './lib/router';
 import clickOutside from "./directives/clickOutside";
+import { useCustomProvidersStore } from './stores/customProvidersStore';
+import { providerFactory } from './providers/ProviderFactory';
+import { OpenAIProvider } from './providers/openai/OpenAIProvider';
 
 const pinia = createPinia();
-
 pinia.use(piniaPluginPersistedstate);
 
 const app = createApp(App);
 app.use(router);
 app.use(pinia);
+
+const { providers: customProviders } = useCustomProvidersStore();
+for (const customProvider of customProviders) {
+    providerFactory.register(customProvider.key, new OpenAIProvider(customProvider));
+}
 
 app.directive('click-outside', clickOutside);
 

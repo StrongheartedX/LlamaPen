@@ -10,6 +10,7 @@ import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
+import { useCustomProvidersStore } from '@/stores/customProvidersStore';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -124,6 +125,28 @@ const selectedProvider = computed({
     }
 });
 
+const customProvidersStore = useCustomProvidersStore();
+const newProvider = ref({ name: '', baseURL: '', apiKey: '' });
+
+function addCustomProvider() {
+    if (!newProvider.value.name || !newProvider.value.baseURL || !newProvider.value.apiKey) {
+        alert('Name, Base URL, and API key are required');
+        return;
+    }
+
+    customProvidersStore.add({ ...newProvider.value });
+    newProvider.value = { name: '', baseURL: '', apiKey: '' };
+    customProvidersStore.$persist();
+    location.reload();
+}
+
+function removeCustomProvider(key: string) {
+    if (selectedProvider.value === key) selectedProvider.value = 'ollama';
+    customProvidersStore.remove(key);
+    customProvidersStore.$persist();
+    location.reload();
+}
+
 const themes = {
     'Auto': { 'auto': 'System Default' },
     'Light': {
@@ -157,8 +180,43 @@ const themes = {
             />
         </SettingsOptionCategory>
 
-        <!-- <BiRocket class="size-4 inline align-middle" />
-        Run more powerful models with LlamaPen's cloud service. -->
+        <SettingsOptionCategory label="Custom Providers">
+            <div 
+                v-if="customProvidersStore.providers.length > 0" 
+                class="flex flex-col gap-2 w-full">
+                <div
+                    v-for="customProvider in customProvidersStore.providers"
+                    :key="customProvider.key"
+                    class="flex items-center justify-between p-2 border border-base-400 rounded-lg">
+                    <div class="flex flex-col min-w-0">
+                        <span class="font-medium truncate">{{ customProvider.name }}</span>
+                        <span class="text-sm text-base-300 truncate">{{ customProvider.baseURL }}</span>
+                    </div>
+                    <ButtonPrimary 
+                        text="Remove" 
+                        color="danger" 
+                        type="button" 
+                        @click="removeCustomProvider(customProvider.key)" />
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 w-full">
+                <SettingsCategoryLabel>Add Custom Provider</SettingsCategoryLabel>
+                <p class="text-base-300 text-sm">Add an OpenAI-compatible provider</p>
+                <UIFormField
+                    label="Provider Name"
+                    v-model="newProvider.name" 
+                    placeholder="Provider name (e.g. Groq)" />
+                <UIFormField
+                    label="Base URL"
+                    v-model="newProvider.baseURL" 
+                    placeholder="Base URL (e.g. https://api.groq.com/openai/v1)" />
+                <UIFormField
+                    label="API Key"
+                    v-model="newProvider.apiKey" 
+                    placeholder="API key" />
+                <ButtonPrimary text="Add Provider" type="button" @click="addCustomProvider" />
+            </div>
+        </SettingsOptionCategory>
 
         <SettingsOptionCategory v-if="isOllama" label="Ollama">
             <SettingsInputText 

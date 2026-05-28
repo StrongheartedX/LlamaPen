@@ -33,10 +33,10 @@ class ProviderFactory {
     }
 
     getSelectedProvider(): LLMProvider {
-        // For now, always return OllamaProvider
         const provider = this.providers.get(this.selectedProvider);
         if (!provider) {
-            throw new Error(`No provider registered under '${this.selectedProvider}'`);
+            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
+            return this.providers.get('ollama')!;
         }
         return provider;
     }
@@ -45,4 +45,8 @@ class ProviderFactory {
 export const providerFactory = new ProviderFactory();
 providerFactory.register('ollama', new OllamaProvider());
 providerFactory.register('lpcloud', new LPCloudProvider());
-providerFactory.register('openai', new OpenAIProvider('https://api.openai.com/v1', '<apikey>'));
+providerFactory.register('openai', new OpenAIProvider({
+    name: 'OpenAI',
+    baseURL: 'https://api.openai.com/v1',
+    apiKey: '<your-openai-api-key>',
+}));

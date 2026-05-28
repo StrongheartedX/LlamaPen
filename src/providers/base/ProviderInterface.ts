@@ -87,3 +87,7 @@ export interface MemoryManagedProvider extends LLMProvider {
 export interface LPCloudLLMProvider extends LLMProvider {
     isSignedIn: boolean;
 }
+
+export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
+    config: TConfig;
+}
