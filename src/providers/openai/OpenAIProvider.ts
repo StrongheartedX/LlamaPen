@@ -6,6 +6,7 @@ import type { ChatOptions, ChatIteratorChunk } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
 import { chatHelper } from "./chatHelper";
+import logger from "@/lib/logger";
 
 type OpenAIConfig = {
     name: string;
@@ -34,7 +35,7 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
 
         this.name = config.name;
         this.config = config;
-        
+
         this.client = new OpenAI({
             apiKey: this.config.apiKey,
             baseURL: this.config.baseURL,
@@ -43,10 +44,24 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
     }
 
     public async refreshConnection(): Promise<void> {
-        // Do nothing right now
-        this.connectionState.status = 'connected';
+        this.connectionState.status = 'checking';
 
-        return;
+        try {
+            await this.client.models.list()
+            this.connectionState.status = 'connected';
+            this.connectionState.error = undefined;
+            this.connectionState.lastChecked = new Date();
+        } catch (error) {
+            logger.error("Failed to connect to OpenAI-compatible provider:", error);
+
+            this.connectionState.status = 'error';
+            if (error instanceof Error) {
+                this.connectionState.error = `Connection failed: ${error.message}`;
+                return;
+            }
+
+            this.connectionState.error = `Unknown error: ${String(error)}`;
+        }
     }
 
     public async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<AsyncIterable<ChatIteratorChunk>> {
