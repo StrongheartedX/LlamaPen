@@ -20,7 +20,7 @@ watch(connectionState, (newState) => {
             moreInfoText.value = `Checking connection to '${currentProvider.value.name}'...`;
             break;
         case 'connected':
-            statusMessageText.value = "Connected";
+            statusMessageText.value = "Connected!";
             moreInfoText.value = `Connected to '${currentProvider.value.name}'!`;
             break;
         case 'error':
@@ -44,14 +44,20 @@ watch(connectionState, (newState) => {
 
 <template>
     <div 
-        class="overflow-hidden text-ellipsis p-1 rounded-md ring-1 cursor-pointer"
+        class="overflow-hidden text-ellipsis rounded-md"
         :class="{ 
-            'text-warning bg-warning/25 hover:bg-warning/35 ring-warning/50': isLoading,
-            'text-success bg-success/25 hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
-            'text-danger bg-danger/25 hover:bg-danger/35 ring-danger/50': !isConnected && !isLoading
-        }"
-        @click="expanded = !expanded">
-        <div class="flex flex-row gap-2">
+            'text-warning bg-warning/25': isLoading,
+            'text-success bg-success/25': isConnected && !isLoading, 
+            'text-danger bg-danger/25': !isConnected && !isLoading
+        }">
+        <div 
+            class="flex flex-row gap-2 p-1 cursor-pointer ring ring-inset rounded-md"
+            :class="{ 
+                'hover:bg-warning/35 ring-warning/50': isLoading,
+                'hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
+                'hover:bg-danger/35 ring-danger/50': !isConnected && !isLoading
+            }"
+            @click="expanded = !expanded">
             <BiLoaderAlt 
                 v-if="isLoading"
                 class="animate-spin size-6" />
@@ -78,7 +84,7 @@ watch(connectionState, (newState) => {
         </div>
         <div 
             v-if="expanded" 
-            class="mt-1">
+            class="p-1 text-sm">
             {{ moreInfoText }}
         </div>
     </div>
