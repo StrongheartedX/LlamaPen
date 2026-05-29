@@ -51,7 +51,7 @@ watch(connectionState, (newState) => {
             'text-danger bg-danger/25': !isConnected && !isLoading
         }">
         <div 
-            class="flex flex-row gap-2 p-1 cursor-pointer ring ring-inset rounded-md"
+            class="flex flex-row gap-2 p-1 cursor-pointer ring ring-inset rounded-md select-none"
             :class="{ 
                 'hover:bg-warning/35 ring-warning/50': isLoading,
                 'hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
