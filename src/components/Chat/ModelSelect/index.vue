@@ -22,6 +22,7 @@ const {
     refreshAndLoadModels,
     selectedModelInfo,
     allModelIds,
+    currentProvider,
 } = useProviderManager();
 
 const {
@@ -236,18 +237,17 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 <div v-if="isLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
-                <div v-else-if="!isConnected" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
-                    <span>
-                        <VscDebugDisconnect class="inline" />
-                        Not connected to Ollama.
+                <div v-else-if="!isConnected" class="h-24 flex flex-col px-3 py-2 justify-center items-center gap-2">
+                    <span class="flex flex-row gap-1 items-center">
+                        <VscDebugDisconnect class="size-5" />
+                        Not connected to '{{ currentProvider.name }}'
                     </span>
                     <ButtonPrimary
                         type="button"
                         color="primary"
                         text="Retry"
                         :icon="BiRefresh"
-                        @click="refreshAndLoadModels "
-                    />
+                        @click="refreshAndLoadModels" />
                 </div>
                 <div v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
                     class="flex w-full p-4 justify-center items-center">
@@ -256,7 +256,13 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 <div v-else-if="queriedModelList.length === 0 && searchQuery === ''"
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models found.</span>
-                    <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
+                    <a 
+                        v-if="currentProvider.type === 'ollama'"
+                        href="https://ollama.com/search" 
+                        target="_blank" 
+                        class="text-secondary hover:underline">
+                        Find on Ollama Library
+                    </a>
                 </div>
                 <div v-else-if="sortedItems.length === 0" 
                     class="flex flex-col w-full p-4 justify-center items-center">

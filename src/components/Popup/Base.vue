@@ -30,10 +30,10 @@ const emit = defineEmits<{
         aria-labelledby="popupTitle" aria-describedby="popupText">
         <div class="flex flex-col w-[calc(100%)-1rem] sm:w-xl lg:w-2xl h-auto sm:h-auto md:h-[60%] rounded-xl p-6 box-border bg-base-700 absolute top-[50%] left-[50%] -translate-[50%] shadow-elevation-5 z-100
             motion-scale-in-75 motion-opacity-in-[75%] motion-duration-100">
-            <h2 id="popupTitle" class="text-3xl font-semibold flex flex-row items-center gap-2">
+            <h2 id="popupTitle" class="text-2xl font-bold flex flex-row items-center gap-2">
                 <slot name="title">Popup</slot>
             </h2>
-            <div id="popupText" class="mt-4 grow text-lg line-space overflow-hidden">
+            <div id="popupText" class="mt-4 grow line-space overflow-hidden">
                 <slot name="body"></slot>
             </div>
             <div class="*:mt-4 *:bg-primary *:text-base-700 *:font-semibold *:hover:bg-secondary *:transition-colors *:duration-dynamic *:w-36 *:h-12 *:rounded-md *:cursor-pointer

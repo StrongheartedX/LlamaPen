@@ -14,7 +14,7 @@ import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds } = useProviderManager();
+const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
 const cloudUserStore = useCloudUserStore();
 
 const props = defineProps<{
@@ -205,7 +205,7 @@ const batchActions: MenuEntry[] = [
             </div>
 
             <div v-if="!isConnected && !isLoading">
-                Not connected to Ollama
+                Not connected to '{{ currentProvider.name }}'
             </div>
             <div v-else-if="modelsList.length === 0">
                 No models found
