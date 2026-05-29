@@ -1,4 +1,4 @@
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive } from "vue";
 import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
@@ -68,7 +68,8 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         return chatHelper(messages, abortSignal, options, this.client);
     }
 
-    public getModelCapabilities(_modelId: string): string[] {
+    public getModelCapabilities(_modelId: string): ModelCapability[] {
+        // OpenAI-style APIs don't expose model capabilities apparently?
         return [];
     }
 
@@ -86,7 +87,7 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
 
     public async generateChatTitle(_messages: ChatMessage[]): Promise<string> {
         // TODO: implement this
-        return "Generated Title";
+        return "New Chat";
     }
 
     protected async getModels(): Promise<ModelInfo[]> {

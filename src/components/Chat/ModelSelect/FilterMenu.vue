@@ -19,12 +19,15 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     emitter.off('modelSelectFocusFilter', () => filterMenu.value?.focus());
-})
+});
 
 </script>
 
 <template>
-    <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-x-auto" ref="filterMenu">
+    <div 
+        v-if="filterMenuOpen" 
+        class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-x-auto" 
+        ref="filterMenu">
         <div class="flex flex-col justify-end">
             <button 
                 class="bg-base-600 hover:bg-base-500 p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 active:ring-base-300 cursor-pointer outline-0 transition-colors duration-dynamic"
@@ -35,21 +38,21 @@ onBeforeUnmount(() => {
         <label class="flex flex-col">
             <span class="text-sm">Filter</span>
             <UIMultiItemSelect 
-                v-model:record="filterCapabilities" 
+                v-model="filterCapabilities" 
                 :items="[
                     {
                         label: 'Thinking',
-                        value: 'supportsReasoning',
+                        value: 'reasoning',
                         icon: BiBrain,
                     },
                     {
                         label: 'Vision',
-                        value: 'supportsVision',
+                        value: 'vision',
                         icon: BiShow,
                     },
                     {
                         label: 'Tools',
-                        value: 'supportsFunctionCalling',
+                        value: 'tools',
                         icon: BiWrench,
                     }
                 ]"

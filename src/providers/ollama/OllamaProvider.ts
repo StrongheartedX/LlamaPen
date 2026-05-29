@@ -6,7 +6,7 @@ import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, MemoryManagedProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/config";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 /**
@@ -150,12 +150,15 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
 
     private async fetchModelCapabilities(modelId: string): Promise<string[]> {
         // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
+        const CAPABILITY_MAP: Record<string, ModelCapability> = {
+            thinking: 'reasoning',
+        };
 
         const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
         if (error || !modelInfo) {
             return [];
         }
 
-        return modelInfo.capabilities;
+        return modelInfo.capabilities.map((c) => CAPABILITY_MAP[c] ?? c);
     }
 }

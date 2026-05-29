@@ -9,7 +9,7 @@ const config = useConfigStore();
 
 const model = defineModel()
 
-const selectedModelCanThink = computed(() => selectedModelCapabilities.value.supportsReasoning);
+const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('reasoning'));
 
 watch(selectedModelCanThink, () => {
     if (selectedModelCanThink.value === false) {

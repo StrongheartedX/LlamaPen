@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
@@ -11,7 +11,7 @@ export abstract class BaseProvider implements LLMProvider {
     abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
-    protected readonly fetchedCapabilities = ref<Map<string, string[]>>(new Map());
+    protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
     
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
@@ -64,7 +64,7 @@ export abstract class BaseProvider implements LLMProvider {
      * Get the capabilities for a specific model.
      * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
      */
-    public abstract getModelCapabilities(modelId: string): string[];
+    public abstract getModelCapabilities(modelId: string): ModelCapability[];
 
     public abstract getModelAttributes(modelId: string): Promise<ModelAttributes>;
 

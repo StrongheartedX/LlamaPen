@@ -50,10 +50,7 @@ onMounted(async () => {
 
     await loadModels(false);
     if (selectedModelInfo.value.exists) {
-        setModel(
-            selectedModelInfo.value.data.info, 
-            true
-        );
+        setModel(selectedModelInfo.value.data.info.id, true);
     } else {
         if (allModelIds.value.length > 0) {
             if (
@@ -61,7 +58,7 @@ onMounted(async () => {
                 rawModels.value[0] !== undefined
             ) {
                 config.selectedModel = allModelIds.value[0];
-                setModel(rawModels.value[0].info, true);
+                setModel(rawModels.value[0].info.id, true);
             }
         }
     }
@@ -106,7 +103,7 @@ function searchKeyDown(e: KeyboardEvent) {
             const selectedItem = sortedItems.value[focusedItemIndex.value];
             
             if (selectedItem !== undefined) {
-                setModel(selectedItem.info);
+                setModel(selectedItem.info.id);
             }
 
             break;
@@ -234,7 +231,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
             <ChatModelSelectFilterMenu />
 
             <div 
-                class="h-80 overflow-y-auto [scrollbar-width:thin]"
+                class="h-80 overflow-y-auto scrollbar-thin"
                 :class="{ 'h-62!': filterMenuOpen }">
                 <div v-if="isLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />

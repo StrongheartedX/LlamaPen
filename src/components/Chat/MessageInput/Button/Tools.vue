@@ -11,7 +11,7 @@ const { isLoading, selectedModelCapabilities } = useProviderManager();
 
 const searchQuery = ref<string>('');
 
-const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.supportsFunctionCalling);
+const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.includes('tools'));
 
 function toggleSelection(item: string) {
     const index = toolsStore.toggled.indexOf(item);

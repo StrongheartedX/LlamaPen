@@ -28,7 +28,8 @@ const defaultTab = computed(() => `tab-${Object.keys(props.selectedModel.attribu
                 </div>
             </div>
 
-            <ModelsPageCapabilitiesList :model-capabilities="selectedModel.capabilities" />
+            <ModelsPageCapabilitiesList 
+                :model-capabilities="selectedModel.capabilities" />
 
             <div class="relative flex-1 min-h-0">
                 <TabsRoot

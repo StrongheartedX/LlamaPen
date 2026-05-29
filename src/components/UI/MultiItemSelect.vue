@@ -10,27 +10,13 @@ type ListItem = {
 }
 
 const modelValue = defineModel<string[]>({ default: () => [] });
-const recordValue = defineModel<Record<string, boolean>>('record');
 
 const selectedValue = computed({
     get: () => {
-        if (recordValue.value) {
-            return Object.entries(recordValue.value)
-                .filter(([_, isSelected]) => isSelected)
-                .map(([key]) => key);
-        }
         return modelValue.value;
     },
     set: (newValues: string[]) => {
-        if (recordValue.value) {
-            const newRecord: Record<string, boolean> = {};
-            props.items.forEach(item => {
-                newRecord[item.value] = newValues.includes(item.value);
-            });
-            recordValue.value = newRecord;
-        } else {
-            modelValue.value = newValues;
-        }
+        modelValue.value = newValues;
     }
 })
 
@@ -115,7 +101,10 @@ function handleItemKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-    <FloatingMenu v-model:is-opened="isMenuOpen" :unstyled-button="true" :unstyled-menu="true">
+    <FloatingMenu 
+        v-model:is-opened="isMenuOpen" 
+        :unstyled-button="true" 
+        :unstyled-menu="true">
         <template #button>
             <button
                 class="overflow-hidden text-ellipsis whitespace-nowrap flex flex-row items-center"
@@ -129,15 +118,23 @@ function handleItemKeydown(e: KeyboardEvent) {
                 @keydown="handleKeydown"
             >
                 <template v-if="selectedValue.length > 0">
-                    <span v-for="item in items.filter(i => selectedValue.includes(i.value))" :key="item.value" class="not-last:mr-1 inline-flex">
-                        <component v-if="item.icon" :is="item.icon" class="mr-1 size-5" />
+                    <span 
+                        v-for="item in items.filter(i => selectedValue.includes(i.value))" 
+                        :key="item.value" 
+                        class="not-last:mr-1 inline-flex" >
+                        <component 
+                            v-if="item.icon" 
+                            :is="item.icon" 
+                            class="mr-1 size-5" />
                         <span v-else>{{ item.label }}</span>
                     </span>
                 </template>
                 <template v-else>
                     (None)
                 </template>
-                <BiChevronDown class="size-4 ml-1 transition-transform inline" :class="{ 'rotate-180': isMenuOpen }" />
+                <BiChevronDown 
+                    class="size-4 ml-1 transition-transform inline" 
+                    :class="{ 'rotate-180': isMenuOpen }" />
             </button>
         </template>
         <template #menu>
@@ -146,19 +143,25 @@ function handleItemKeydown(e: KeyboardEvent) {
                 class="absolute z-10"
                 :class="menuClass">
                 <li 
-                    tabindex="-1"
                     v-for="(item, index) in items"
-                    :key="index"
+                    class="flex items-center select-none"
+                    tabindex="-1"
                     role="option"
                     ref="itemRefs"
+                    :key="index"
+                    :class="[
+                        itemClass, 
+                        selectedValue.includes(item.value) ? selectedItemClass : ''
+                    ]"
                     @click.prevent="handleSelectItem(item)"
                     @keydown="handleItemKeydown"
                     @mouseenter="hoveringOverIndex = index; activeIndex = index"
-                    @mouseleave="hoveringOverIndex = -1"
-                    class="flex items-center select-none"
-                    :class="[itemClass, selectedValue.includes(item.value) ? selectedItemClass : '']" >
+                    @mouseleave="hoveringOverIndex = -1" >
                     <BiCheck v-if="selectedValue.includes(item.value)" />
-                    <component v-if="item.icon" :is="item.icon" class="mr-2" />
+                    <component 
+                        v-if="item.icon"
+                        class="mr-2" 
+                        :is="item.icon" />
                     {{ item.label }}
                 </li>
             </ul>

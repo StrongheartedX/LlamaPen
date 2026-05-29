@@ -10,6 +10,8 @@ import { OllamaProvider } from "@/providers/ollama/OllamaProvider";
 
 // Types
 /** App-level info */
+export type ModelCapability = ('vision' | 'reasoning' | 'tools' | ({} & string));
+
 export type ModelInfo = {
     displayName: string;
     hidden: boolean;
@@ -18,7 +20,7 @@ export type ModelInfo = {
         name: string; // Pretty name
         id: string;
         subtitle: string;
-        capabilities: string[];
+        capabilities: ModelCapability[];
         providerMetadata?: ProviderMetadata;
     };
 }
@@ -154,7 +156,8 @@ export function useProviderManager() {
             }
         });
 
-    const selectedModelCapabilities = computed<string[]>(() => {
+    // https://stackoverflow.com/a/79910618/17727765
+    const selectedModelCapabilities = computed(() => {
         if (!selectedModelInfo.value.exists) return [];
 
         return getModelCapabilities(selectedModelInfo.value.data.info.id);

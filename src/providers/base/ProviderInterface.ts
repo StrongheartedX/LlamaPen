@@ -1,6 +1,6 @@
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
@@ -48,7 +48,7 @@ export interface LLMProvider {
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): string[];
+    getModelCapabilities(modelId: string): ModelCapability[];
 
     /**
      * Get the attributes of a model. E.g. license, modelfile, etc.

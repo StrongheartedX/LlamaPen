@@ -7,6 +7,7 @@ import { useConfigStore } from "@/stores/config";
 import { getSessionToken } from "@/stores/useCloudUserStore";
 import { tryCatch } from "@/utils/core/tryCatch";
 import type { LpCloudPricing } from "./types";
+import type { ModelCapability } from "@/composables/useProviderManager";
 
 
 
@@ -73,7 +74,17 @@ class LPCloudWrapper {
             return [];
         }
 
-        return parsed.models;
+        const CAPABILITY_MAP: Record<string, ModelCapability> = {
+            thinking: 'reasoning',
+        };
+
+
+        return parsed.models.map((m) => {
+            return {
+                ...m,
+                capabilities: m.capabilities.map((c) => CAPABILITY_MAP[c] ?? c),
+            }
+        });
     }
 
     async generateTitle(messages: { role: string, content: string }[]): Promise<string> {
