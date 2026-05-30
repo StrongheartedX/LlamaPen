@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { useRouter } from 'vue-router';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
@@ -10,7 +10,7 @@ import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
-import { useCustomProvidersStore } from '@/stores/customProvidersStore';
+import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
 
 const config = useConfigStore();
 const router = useRouter();

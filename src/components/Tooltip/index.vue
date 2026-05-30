@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFloatingMenu } from '@/composables/useFloatingMenu';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { onUnmounted, ref } from 'vue';
 
 const props = withDefaults(defineProps<{

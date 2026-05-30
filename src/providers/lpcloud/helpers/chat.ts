@@ -1,4 +1,4 @@
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import type { ChatRequest } from "ollama";
 import * as Ollama from 'ollama/browser';

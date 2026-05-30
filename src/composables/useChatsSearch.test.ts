@@ -1,5 +1,5 @@
 import { setActivePinia, createPinia } from 'pinia';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useChatSearch } from './useChatSearch';
 

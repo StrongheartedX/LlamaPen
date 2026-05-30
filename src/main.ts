@@ -8,7 +8,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import router from './lib/router';
 import clickOutside from "./directives/clickOutside";
-import { useCustomProvidersStore } from './stores/customProvidersStore';
+import { useCustomProvidersStore } from './stores/useCustomProvidersStore.ts';
 import { providerFactory } from './providers/ProviderFactory';
 import { OpenAIProvider } from './providers/openai/OpenAIProvider';
 

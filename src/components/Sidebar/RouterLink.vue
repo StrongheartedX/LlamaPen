@@ -2,7 +2,7 @@
 // https://router.vuejs.org/guide/advanced/extending-router-link.html
 
 import { emitter } from '@/lib/mitt';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { computed } from 'vue'
 import { RouterLink, type NavigationFailure } from 'vue-router'

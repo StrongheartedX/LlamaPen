@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { BiBrain, BiRefresh, BiShow, BiWrench } from 'vue-icons-plus/bi';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { storeToRefs } from 'pinia';

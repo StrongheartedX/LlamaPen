@@ -5,7 +5,7 @@ import { ollamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, MemoryManagedProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 

@@ -2,7 +2,7 @@ import supabase from '@/lib/supabase';
 import { authedFetch } from '@/utils/core/authedFetch';
 import { defineStore } from 'pinia';
 import { computed, ref, type UnwrapRef } from 'vue';
-import { useConfigStore } from './config';
+import { useConfigStore } from './useConfigStore';
 
 export type LPCCustomErrorResponse = {
     type: 'error';

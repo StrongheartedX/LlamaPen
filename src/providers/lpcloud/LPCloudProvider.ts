@@ -8,7 +8,7 @@ import { appMessagesToLPCloud } from "./converters/appMessagesToLPCloud";
 import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 import useCloudUserStore from "@/stores/useCloudUserStore";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 

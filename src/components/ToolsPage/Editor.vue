@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useToolsStore from '@/stores/toolsStore';
+import useToolsStore from '@/stores/useToolsStore';
 import { computed } from 'vue';
 import { BiError, BiLinkExternal, BiTrash } from 'vue-icons-plus/bi';
 import { ref } from 'vue';

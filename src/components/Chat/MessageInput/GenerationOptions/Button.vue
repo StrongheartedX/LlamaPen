@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { BiSliderAlt } from 'vue-icons-plus/bi';
 import { ref } from 'vue';
 

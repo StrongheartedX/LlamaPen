@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
-import useToolsStore from '@/stores/toolsStore';
+import useToolsStore from '@/stores/useToolsStore';
 import { computed, ref } from 'vue';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { useProviderManager } from '@/composables/useProviderManager';
 
 const toolsStore = useToolsStore();

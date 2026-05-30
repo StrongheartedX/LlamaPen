@@ -1,4 +1,4 @@
-import useChatsStore from "@/stores/chatsStore";
+import useChatsStore from "@/stores/useChatsStore";
 import { computed, ref } from "vue";
 
 export type SearchSortTypes = 'latest-activity' | 'created' | 'alphabetically';

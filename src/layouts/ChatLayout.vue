@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Sidebar from '@/components/Sidebar/Sidebar.vue';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const config = useConfigStore();
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
-import { useConfigStore } from './stores/config';
+import { useConfigStore } from './stores/useConfigStore';
 import { useProviderManager } from './composables/useProviderManager';
 
 const config = useConfigStore();

@@ -1,5 +1,5 @@
 import supabase from '@/lib/supabase';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { getSessionToken } from '@/stores/useCloudUserStore';
 
 export async function authedFetch(url: string, options?: RequestInit): Promise<Response> {

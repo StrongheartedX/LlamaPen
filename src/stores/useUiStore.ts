@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { useConfigStore } from "./config";
+import { useConfigStore } from "./useConfigStore";
 import { useProviderManager } from "@/composables/useProviderManager";
 
 /**

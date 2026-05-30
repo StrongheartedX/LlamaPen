@@ -2,7 +2,7 @@
 import { BiHelpCircle, BiSolidErrorCircle } from 'vue-icons-plus/bi';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '../../lib/mitt';
-import { useConfigStore } from '../../stores/config';
+import { useConfigStore } from '../../stores/useConfigStore';
 import { useRouter } from 'vue-router';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { OpenAIProvider } from '@/providers/openai/OpenAIProvider';

@@ -3,7 +3,7 @@ import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderC
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import logger from "@/lib/logger";
 import { OpenAIProvider } from "@/providers/openai/OpenAIProvider";
 import { OllamaProvider } from "@/providers/ollama/OllamaProvider";

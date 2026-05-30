@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useConfigStore } from "./config";
+import { useConfigStore } from "./useConfigStore";
 import type { ProviderMetadata } from "@/providers/base/types";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 import useCloudUserStore from "./useCloudUserStore";

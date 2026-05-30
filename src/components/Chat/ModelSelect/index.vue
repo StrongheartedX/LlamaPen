@@ -8,8 +8,8 @@ import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
-import useUIStore from '@/stores/uiStore';
-import { useConfigStore } from '@/stores/config';
+import useUIStore from '@/stores/useUiStore';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const config = useConfigStore();
 
