@@ -22,7 +22,10 @@ function hide() {
 
 
 <template>
-	<PopupBase :showing @close="hide">
+	<PopupBase 
+		:showing
+		:close-button="true"
+		@close="hide">
 		<template #title>
 			Keyboard shortcuts
 		</template>
@@ -38,9 +41,6 @@ function hide() {
 				<PopupShortcutsDisplay label="Pin chat" :hotkey="{ shift: true, alt: true, key: 'p' }" />
 				<PopupShortcutsDisplay label="Delete chat" :hotkey="{ ctrl: true, shift: true, key: '⌫' }" />
 			</div>
-		</template>
-		<template #buttons>
-			<button @click="hide">Close</button>
 		</template>
 	</PopupBase>
 </template>

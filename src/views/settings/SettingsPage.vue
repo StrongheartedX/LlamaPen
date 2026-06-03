@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiLink, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
@@ -126,26 +126,6 @@ const selectedProvider = computed({
 });
 
 const customProvidersStore = useCustomProvidersStore();
-const newProvider = ref({ name: '', baseURL: '', apiKey: '' });
-
-function addCustomProvider() {
-    if (!newProvider.value.name || !newProvider.value.baseURL || !newProvider.value.apiKey) {
-        alert('Name, Base URL, and API key are required');
-        return;
-    }
-
-    customProvidersStore.add({ ...newProvider.value });
-    newProvider.value = { name: '', baseURL: '', apiKey: '' };
-    customProvidersStore.$persist();
-    location.reload();
-}
-
-function removeCustomProvider(key: string) {
-    if (selectedProvider.value === key) selectedProvider.value = 'ollama';
-    customProvidersStore.remove(key);
-    customProvidersStore.$persist();
-    location.reload();
-}
 
 const themes = {
     'Auto': { 'auto': 'System Default' },
@@ -178,44 +158,38 @@ const themes = {
                 :itemNames="[...allProviders.values()].map(p => p.name)"
                 tooltip="The LLM provider to use. (Default: Ollama)"
             />
-        </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Custom Providers">
+            <SettingsCategoryLabel>Custom Providers</SettingsCategoryLabel>
+
             <div 
                 v-if="customProvidersStore.providers.length > 0" 
                 class="flex flex-col gap-2 w-full">
                 <div
                     v-for="customProvider in customProvidersStore.providers"
                     :key="customProvider.key"
-                    class="flex items-center justify-between p-2 border border-base-400 rounded-lg">
+                    class="flex items-center justify-between p-2 border border-base-500 rounded-lg">
                     <div class="flex flex-col min-w-0">
                         <span class="font-medium truncate">{{ customProvider.name }}</span>
-                        <span class="text-sm text-base-300 truncate">{{ customProvider.baseURL }}</span>
+                        <span class="text-sm text-base-300 truncate">
+                            <BiLink class="size-3 inline"/>
+                            {{ customProvider.baseURL }}
+                        </span>
                     </div>
                     <ButtonPrimary 
-                        text="Remove" 
-                        color="danger" 
+                        text="Edit" 
+                        color="primary" 
                         type="button" 
-                        @click="removeCustomProvider(customProvider.key)" />
+                        @click="emitter.emit('upsertProviderPopup', customProvider)" />
                 </div>
             </div>
-            <div class="flex flex-col gap-2 w-full">
-                <SettingsCategoryLabel>Add Custom Provider</SettingsCategoryLabel>
-                <p class="text-base-300 text-sm">Add an OpenAI-compatible provider</p>
-                <UIFormField
-                    label="Provider Name"
-                    v-model="newProvider.name" 
-                    placeholder="Provider name (e.g. Groq)" />
-                <UIFormField
-                    label="Base URL"
-                    v-model="newProvider.baseURL" 
-                    placeholder="Base URL (e.g. https://api.groq.com/openai/v1)" />
-                <UIFormField
-                    label="API Key"
-                    v-model="newProvider.apiKey" 
-                    placeholder="API key" />
-                <ButtonPrimary text="Add Provider" type="button" @click="addCustomProvider" />
+            <div v-else class="text-sm text-base-300">
+                No custom providers added.
             </div>
+
+            <ButtonPrimary 
+                text="Add Provider" 
+                type="button" 
+                @click="emitter.emit('upsertProviderPopup')" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory v-if="isOllama" label="Ollama">

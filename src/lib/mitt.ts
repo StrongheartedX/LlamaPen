@@ -20,6 +20,12 @@ type Events = {
     focusInputBar: void,
     modelSelectFocusFilter: void,
     shortcutsPopup: void,
+    upsertProviderPopup?: {
+        key: string;
+        name?: string;
+        baseURL?: string;
+        apiKey?: string;
+    }
 };
 
 export const emitter = mitt<Events>();
