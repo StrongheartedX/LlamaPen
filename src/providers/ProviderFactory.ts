@@ -2,7 +2,6 @@ import logger from "@/lib/logger";
 import type { LLMProvider } from "./base/ProviderInterface";
 import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
-import { OpenAIProvider } from "./openai/OpenAIProvider";
 
 class ProviderFactory {
     private providers = new Map<string, LLMProvider>();
@@ -45,8 +44,3 @@ class ProviderFactory {
 export const providerFactory = new ProviderFactory();
 providerFactory.register('ollama', new OllamaProvider());
 providerFactory.register('lpcloud', new LPCloudProvider());
-providerFactory.register('openai', new OpenAIProvider({
-    name: 'OpenAI',
-    baseURL: 'https://api.openai.com/v1',
-    apiKey: '<your-openai-api-key>',
-}));
