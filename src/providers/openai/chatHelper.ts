@@ -39,6 +39,8 @@ export async function* chatHelper(
                 return { type: 'done', reason: 'cancelled' };
             }
 
+            if (!chunk.choices.length) continue;
+
             if (chunk.choices[0].finish_reason) {
                 yield { 
                     type: 'message',
