@@ -85,9 +85,8 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         }
     }
 
-    public async generateChatTitle(_messages: ChatMessage[]): Promise<string> {
-        // TODO: implement this
-        return "New Chat";
+    public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
+        return messages[0].content.slice(0, 20) + (messages[0].content.length > 20 ? '...' : '');
     }
 
     protected async getModels(): Promise<ModelInfo[]> {
