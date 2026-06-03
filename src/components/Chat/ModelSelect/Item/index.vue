@@ -6,7 +6,6 @@ import { BiDotsHorizontalRounded, BiDotsVerticalRounded, BiHeart, BiPencil, BiSo
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
-import type { LpCloudPricing } from '@/providers/lpcloud/types';
 
 const cloudUserStore = useCloudUserStore();
 const config = useConfigStore();
