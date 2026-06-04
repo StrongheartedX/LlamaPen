@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useProviderManager } from '@/composables/useProviderManager';
 import useDownloadsStore from '@/stores/useDownloadsStore';
-import { BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
+import { BiCheck, BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
 import { computed } from "vue";
 
 const providerStore = useProviderManager();
@@ -16,6 +16,8 @@ const downloadCount = computed<string | undefined>(() => {
     const downloads = Object.keys(downloadStore.progressChunks).length;
     return downloads === 0 ? undefined : String(downloads);
 });
+
+const currentProviderOllama = computed(() => providerStore.currentProviderId.value === 'ollama');
 </script>
 
 <template>
@@ -23,12 +25,12 @@ const downloadCount = computed<string | undefined>(() => {
         <SidebarStateBackHeader />
 
         <SidebarMenuLink
-            text="Installed"
-            :icon="BiData"
+            :text="currentProviderOllama ? 'Installed' : 'Available'"
+            :icon="currentProviderOllama ? BiData : BiCheck"
             :to="{ path: '/models/installed' }"
             :badge="installedCount"/>
 
-        <template v-if="providerStore.currentProviderId.value === 'ollama'">
+        <template v-if="currentProviderOllama">
             <SidebarMenuLink
                 text="Browse"
                 :icon="BiCloud"
