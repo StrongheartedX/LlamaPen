@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { useRouter } from 'vue-router';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiLink, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
+import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -124,6 +125,8 @@ const selectedProvider = computed({
     }
 });
 
+const customProvidersStore = useCustomProvidersStore();
+
 const themes = {
     'Auto': { 'auto': 'System Default' },
     'Light': {
@@ -155,10 +158,39 @@ const themes = {
                 :itemNames="[...allProviders.values()].map(p => p.name)"
                 tooltip="The LLM provider to use. (Default: Ollama)"
             />
-        </SettingsOptionCategory>
 
-        <!-- <BiRocket class="size-4 inline align-middle" />
-        Run more powerful models with LlamaPen's cloud service. -->
+            <SettingsCategoryLabel>Custom Providers</SettingsCategoryLabel>
+
+            <div 
+                v-if="customProvidersStore.providers.length > 0" 
+                class="flex flex-col gap-2 w-full">
+                <div
+                    v-for="customProvider in customProvidersStore.providers"
+                    :key="customProvider.key"
+                    class="flex items-center justify-between p-2 border border-base-500 rounded-lg">
+                    <div class="flex flex-col min-w-0">
+                        <span class="font-medium truncate">{{ customProvider.name }}</span>
+                        <span class="text-sm text-base-300 truncate">
+                            <BiLink class="size-3 inline"/>
+                            {{ customProvider.baseURL }}
+                        </span>
+                    </div>
+                    <ButtonPrimary 
+                        text="Edit" 
+                        color="primary" 
+                        type="button" 
+                        @click="emitter.emit('upsertProviderPopup', customProvider)" />
+                </div>
+            </div>
+            <div v-else class="text-sm text-base-300">
+                No custom providers added.
+            </div>
+
+            <ButtonPrimary 
+                text="Add Provider" 
+                type="button" 
+                @click="emitter.emit('upsertProviderPopup')" />
+        </SettingsOptionCategory>
 
         <SettingsOptionCategory v-if="isOllama" label="Ollama">
             <SettingsInputText 

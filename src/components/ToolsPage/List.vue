@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import useToolsStore from '@/stores/toolsStore';
+import useToolsStore from '@/stores/useToolsStore';
 import { BiCheckCircle, BiDotsVerticalRounded, BiMinusCircle, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 

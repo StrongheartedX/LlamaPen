@@ -5,15 +5,15 @@ import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { useConfigStore } from '../config';
-import useChatsStore from '../chatsStore';
-import useToolsStore from '../toolsStore';
+import { useConfigStore } from '../useConfigStore';
+import useChatsStore from '../useChatsStore';
+import useToolsStore from '../useToolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ChatIteratorChunk } from '@/providers/base/types';
-import useUIStore from '../uiStore';
+import useUIStore from '../useUiStore';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.

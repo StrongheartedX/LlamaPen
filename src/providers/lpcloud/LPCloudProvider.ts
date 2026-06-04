@@ -3,12 +3,12 @@ import { lpCloudWrapper } from "./LPCloudWrapper";
 import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, LPCloudLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import { appMessagesToLPCloud } from "./converters/appMessagesToLPCloud";
 import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 import useCloudUserStore from "@/stores/useCloudUserStore";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 
@@ -87,7 +87,7 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
         });
     }
 
-    public getModelCapabilities(modelId: string): string[] {
+    public getModelCapabilities(modelId: string): ModelCapability[] {
         return this.fetchedCapabilities.value.get(modelId) || [];
     }
 

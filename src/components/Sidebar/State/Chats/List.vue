@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 
 const chatsStore = useChatsStore();
 const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chatsStore);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { BiCloud, BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
 import useCloudUserStore from '@/stores/useCloudUserStore';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const cloudUserStore = useCloudUserStore();
 const config = useConfigStore();

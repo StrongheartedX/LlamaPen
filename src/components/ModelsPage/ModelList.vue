@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
@@ -8,13 +8,13 @@ import { BiCopy, BiDotsVerticalRounded, BiHide, BiLinkExternal, BiPencil, BiShow
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
-import useUIStore from '@/stores/uiStore';
+import useUIStore from '@/stores/useUiStore';
 // This has to be imported as we are using it programatically
 import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds } = useProviderManager();
+const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
 const cloudUserStore = useCloudUserStore();
 
 const props = defineProps<{
@@ -205,7 +205,7 @@ const batchActions: MenuEntry[] = [
             </div>
 
             <div v-if="!isConnected && !isLoading">
-                Not connected to Ollama
+                Not connected to '{{ currentProvider.name }}'
             </div>
             <div v-else-if="modelsList.length === 0">
                 No models found

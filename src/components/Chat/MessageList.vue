@@ -2,12 +2,12 @@
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { emitter } from '@/lib/mitt';
-import useUIStore from '@/stores/uiStore';
+import useUIStore from '@/stores/useUiStore';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
 import logger from '@/lib/logger';
 import setPageTitle from '@/utils/core/setPageTitle';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import parseNumOrNull from '@/utils/core/parseNumOrNull';
 
 const messageListRef = ref<HTMLElement | null>(null);

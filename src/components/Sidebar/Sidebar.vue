@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
 import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
-import { useConfigStore } from '../../stores/config';
+import { useConfigStore } from '../../stores/useConfigStore';
 import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import useSidebarStore from '@/stores/useSidebarStore';
 import { storeToRefs } from 'pinia';
 

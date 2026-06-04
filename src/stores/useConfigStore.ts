@@ -66,7 +66,7 @@ interface Config {
     },
     developer: {
         infoLogs: boolean,
-    }
+    },
 };
 
 export const defaultMessageOptions = { // Defaults from https://github.com/ollama/ollama/blob/main/docs/modelfile.md#parameter
@@ -144,7 +144,7 @@ export const useConfigStore = defineStore('config', {
         },
         developer: {
             infoLogs: false,
-        }
+        },
     }),
     getters: {
         requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollama.url}${path}`,

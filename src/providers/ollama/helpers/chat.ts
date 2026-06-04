@@ -1,4 +1,4 @@
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import { ollamaWrapper } from "../OllamaWrapper";
@@ -29,7 +29,7 @@ async function* chatIterator(
         options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
     };
 
-    if (selectedModelCapabilities.value.supportsFunctionCalling) {
+    if (selectedModelCapabilities.value.includes('tools')) {
         chatOptions['tools'] = appToolsToOllama();
     }
 

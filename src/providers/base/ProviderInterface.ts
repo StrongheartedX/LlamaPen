@@ -1,6 +1,6 @@
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
@@ -11,7 +11,7 @@ export type ConnectionState = {
 
 export interface LLMProvider {
     readonly name: string;
-    readonly type: 'ollama' | 'lpcloud';
+    readonly type: 'ollama' | 'lpcloud' | 'openai';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
@@ -48,7 +48,7 @@ export interface LLMProvider {
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): string[];
+    getModelCapabilities(modelId: string): ModelCapability[];
 
     /**
      * Get the attributes of a model. E.g. license, modelfile, etc.
@@ -86,4 +86,8 @@ export interface MemoryManagedProvider extends LLMProvider {
 
 export interface LPCloudLLMProvider extends LLMProvider {
     isSignedIn: boolean;
+}
+
+export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
+    config: TConfig;
 }

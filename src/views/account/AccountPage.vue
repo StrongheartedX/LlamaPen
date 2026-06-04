@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import useCloudUserStore from '@/stores/useCloudUserStore';
 import { authedFetch } from '@/utils/core/authedFetch';
 import logger from '@/lib/logger';

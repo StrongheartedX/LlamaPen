@@ -6,4 +6,5 @@
     <PopupLightbox />
     <PopupSearch />
     <PopupShortcuts />
+    <PopupAddProvider />
 </template>

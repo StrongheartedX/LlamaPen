@@ -2,19 +2,20 @@
 import type { IconType } from 'vue-icons-plus';
 import { BiBrain, BiMicrophone, BiReflectVertical, BiShow, BiText, BiWrench } from 'vue-icons-plus/bi';
 import Unknown from '@/icons/unknown.svg';
+import type { ModelCapability } from "@/composables/useProviderManager";
 
 defineProps<{
-    modelCapabilities: string[];
+    modelCapabilities: ModelCapability[];
 }>();
 
-const capabilityDetails: Record<string, { icon: IconType, color: string, ring: string }> = {
+const capabilityDetails: Record<ModelCapability, { icon: IconType, color: string, ring: string }> = {
     'completion': { 
         icon: BiText, color: 'bg-capability-completion/40', ring: 'ring-capability-completion' 
     },
     'tools': { 
         icon: BiWrench, color: 'bg-capability-tools/40', ring: 'ring-capability-tools' 
     },
-    'thinking': { 
+    'reasoning': { 
         icon: BiBrain, color: 'bg-capability-reasoning/40', ring: 'ring-capability-reasoning' 
     },
     'vision': { 

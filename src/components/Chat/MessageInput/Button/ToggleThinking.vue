@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { useProviderManager } from '@/composables/useProviderManager';
 
 const { isLoading, selectedModelCapabilities, selectedModelInfo } = useProviderManager();
@@ -9,7 +9,7 @@ const config = useConfigStore();
 
 const model = defineModel()
 
-const selectedModelCanThink = computed(() => selectedModelCapabilities.value.supportsReasoning);
+const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('reasoning'));
 
 watch(selectedModelCanThink, () => {
     if (selectedModelCanThink.value === false) {

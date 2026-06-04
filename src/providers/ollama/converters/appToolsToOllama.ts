@@ -1,4 +1,4 @@
-import useToolsStore from "@/stores/toolsStore";
+import useToolsStore from "@/stores/useToolsStore";
 import type { Tool } from "ollama";
 
 export function appToolsToOllama(): Tool[] {

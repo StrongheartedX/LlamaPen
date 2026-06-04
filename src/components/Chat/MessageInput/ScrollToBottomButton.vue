@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { emitter } from '@/lib/mitt';
-import useUIStore from '@/stores/uiStore';
+import useUIStore from '@/stores/useUiStore';
 import { BiSolidDownArrowCircle } from 'vue-icons-plus/bi';
 import { storeToRefs } from 'pinia';
 
