@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
 import { useProviderManager } from '@/composables/useProviderManager';
@@ -43,8 +43,6 @@ onMounted(() => {
             const { key, name, baseURL, apiKey } = provider;
             providerKey.value = key;
 
-            console.log(provider)
-
             newProvider.value = { 
                 name: name ?? '',
                 baseURL: baseURL ?? '',
@@ -62,6 +60,7 @@ onUnmounted(() => {
 
 function hide() {
     providerKey.value = null;
+    selectedPreset.value = '';
     newProvider.value = { name: '', baseURL: '', apiKey: '' };
 	isShowing.value = false;
 }
@@ -92,6 +91,21 @@ function removeCustomProvider() {
     customProvidersStore.$persist();
     location.reload();
 }
+
+const selectedPreset = ref<string>('');
+const applyingPreset = ref(false);
+
+function onSelectPreset(preset: { name: string, baseURL: string, apiKey: string }) {
+    applyingPreset.value = true;
+    newProvider.value = preset;
+    nextTick(() => { applyingPreset.value = false; });
+}
+
+watch(() => newProvider.value.baseURL, () => {
+    if (!applyingPreset.value && selectedPreset.value && selectedPreset.value !== 'custom') {
+        selectedPreset.value = 'custom';
+    }
+});
 </script>
 
 
@@ -104,19 +118,27 @@ function removeCustomProvider() {
 			{{ providerKey ? `Editing '${newProvider.name}'` : 'Add a provider' }}
 		</template>
 		<template #body>
-			<div class="flex flex-col w-full h-full box-border overflow-auto">
+			<div class="flex flex-col">
 				<p 
                     v-if="!providerKey"
-                    class="text-base-300 text-sm mb-2">Add an OpenAI-compatible provider</p>
+                    class="text-base-300 text-sm mb-2">
+                    Works with any OpenAI-compatible API
+                </p>
+
+                <PopupAddProviderPresetsSelector
+                    v-if="!providerKey"
+                    v-model:selected-preset="selectedPreset"
+                    @select-preset="onSelectPreset" />
+
                 <UIFormField
                     label="Provider Name"
                     v-model="newProvider.name" 
-                    placeholder="E.g. Groq"
+                    placeholder="E.g. llama.cpp"
                     tooltip="The name of the provider in the list." />
                 <UIFormField
                     label="Base URL"
                     v-model="newProvider.baseURL" 
-                    placeholder="E.g. https://api.groq.com/openai/v1"
+                    placeholder="E.g. http://127.0.0.1:8080/v1"
                     tooltip="The OpenAI-compatible base URL to send requests to." />
                 <UIFormField
                     label="API Key"
