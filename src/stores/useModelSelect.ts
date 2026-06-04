@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useConfigStore } from "./config";
-import type { Model, ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
+import { useConfigStore } from "./useConfigStore";
+import type { ProviderMetadata } from "@/providers/base/types";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 import useCloudUserStore from "./useCloudUserStore";
 
@@ -17,11 +17,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
     const filterMenuOpen = ref(false);
     const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
     const direction = ref<'asc' | 'des'>('asc');
-    const filterCapabilities = ref<ModelCapabilities>({
-        supportsFunctionCalling: false,
-        supportsReasoning: false,
-        supportsVision: false,
-    });
+    const filterCapabilities = ref<string[]>([]);
 
     const queriedModelList = computed<ModelInfo[]>(() => {
         return useProviderManager().rawModels.value
@@ -43,11 +39,9 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
         const filter = filterCapabilities.value;
         const filteredItems = items.filter(model => {
-            const capabilities = getModelCapabilities(model.info.id);
+            const capabilities = getModelCapabilities(model.info.id)
 
-            return (Object.keys(filter) as Array<keyof ModelCapabilities>).every(key => {
-                return !filter[key] || capabilities[key];
-            });
+            return filter.every(filterItem => capabilities.includes(filterItem));
         });
 
         filteredItems.forEach(item => {
@@ -106,8 +100,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         return items;
     }
 
-    async function setModel(newModel: Model, skipUiUpdate: boolean = false) {
-        const newModelId = newModel.id;
+    async function setModel(newModelId: string, skipUiUpdate: boolean = false) {
         config.selectedModel = newModelId;
 
         if (!skipUiUpdate) {
@@ -125,11 +118,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
     const sortedItems = computed(() => sortItems(queriedModelList.value.filter((item) => !item.hidden)));
 
     function resetFilters() {
-        filterCapabilities.value = {
-            supportsFunctionCalling: false,
-            supportsReasoning: false,
-            supportsVision: false,
-        };
+        filterCapabilities.value = [];
 
         orderBy.value = 'default';
         direction.value = 'asc';

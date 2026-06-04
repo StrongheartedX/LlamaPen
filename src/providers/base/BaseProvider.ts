@@ -1,37 +1,20 @@
 import { ref, type Ref } from "vue";
-import type { BaseLLMProvider } from "./ProviderInterface";
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
-import { useConfigStore } from "@/stores/config";
-import type { ModelInfo } from "@/composables/useProviderManager";
+import type { ConnectionState, LLMProvider } from "./ProviderInterface";
+import type { ChatIteratorChunk, ChatOptions } from "./types";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
-export abstract class BaseProvider implements BaseLLMProvider {
+export abstract class BaseProvider implements LLMProvider {
     abstract readonly name: string;
-    abstract readonly connectionState: BaseLLMProvider['connectionState'];
+    abstract readonly type: 'ollama' | 'lpcloud' | 'openai';
+    abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
-    protected readonly fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
+    protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
     
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
-
-    private transformModel(model: Model): ModelInfo {
-        const modelId = model.id;
-
-        const displayName = 
-            useConfigStore().chat.modelRenames[modelId] ||
-            model.name ||
-            modelId;
-
-        const isHidden = useConfigStore().chat.hiddenModels.includes(modelId);
-
-        return {
-            info: model,
-            displayName,
-            loadedInMemory: false,
-            hidden: isHidden,
-        }
-    }
 
     async loadModels(force: boolean = false): Promise<void> {
         if (this.initialised.value && !force) return;
@@ -43,7 +26,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
 
         this.loadPromise = (async () => {
             try {
-                this.rawModels.value = (await this.getModels()).map(this.transformModel);
+                this.rawModels.value = await this.getModels();
                 
                 try {
                     await this.onModelsLoaded();
@@ -58,15 +41,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
 
         return this.loadPromise;
     }
-
-    /**
-     * Hook for provider-specific logic after models are loaded with no errors.
-     * E.g. used in Ollama to fetch capabilites for each model.
-     */
-    protected onModelsLoaded(): Promise<void> | void {
-        // Override in subclasses if needed
-    }
-
 
     /**
      * Run connectivity check to provider.
@@ -86,17 +60,31 @@ export abstract class BaseProvider implements BaseLLMProvider {
         options: ChatOptions
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
-    public abstract getModels(): Promise<Model[]>;
-
     /**
      * Get the capabilities for a specific model.
      * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
      */
-    public abstract getModelCapabilities(modelId: string): ModelCapabilities;
+    public abstract getModelCapabilities(modelId: string): ModelCapability[];
+
+    public abstract getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
     /**
      * Generate the title to a chat using a provider's model.
      * @param messages Messages to use as context for the chat title generation.
      */
     public abstract generateChatTitle(messages: ChatMessage[]): Promise<string>;
+
+    /**
+     * Hook for provider-specific logic after models are loaded with no errors.
+     * E.g. used in Ollama to fetch capabilites for each model.
+     */
+    protected onModelsLoaded(): Promise<void> | void {
+        // Override in subclasses if needed
+    }
+
+    /**
+     * Internal method to fetch models from provider and transform them info a
+     * common format.
+     */
+    protected abstract getModels(): Promise<ModelInfo[]>;
 }

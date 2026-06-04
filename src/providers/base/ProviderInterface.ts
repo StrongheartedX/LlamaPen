@@ -1,9 +1,7 @@
-import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
-import type { ShowResponse } from "ollama/browser";
+import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { OllamaProvider } from "../ollama/OllamaProvider";
-import type { ModelInfo } from "@/composables/useProviderManager";
-import type { LPCloudProvider } from "../lpcloud/LPCloudProvider";
+import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
     status: 'connected' | 'disconnected' | 'checking' | 'error';
@@ -11,24 +9,23 @@ export type ConnectionState = {
     lastChecked?: Date;
 }
 
-export interface BaseLLMProvider {
-    /**
-     * Pretty name of the provider.
-     */
+export interface LLMProvider {
     readonly name: string;
+    readonly type: 'ollama' | 'lpcloud' | 'openai';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
+
+    /**
+     * Loads models from the provider and initialises capabilities.
+     * @param force When false, if models were already loaded before, ignore the reqest. 
+     * True overrides this and re-sends a request, aka refreshes.
+     */
+    loadModels(force: boolean): Promise<void>;
 
     /** 
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
-    refreshConnection(): Promise<void>
-
-    /**
-     * Loads models from the provider and initialises capabilities.
-     * @param force When false, if models were already loaded before, ignore the reqest. True overrides this and re-sends a request, aka refreshes.
-     */
-    loadModels(force: boolean): Promise<void | null>;
+    refreshConnection(): Promise<void>;
     
 
     /**
@@ -48,16 +45,16 @@ export interface BaseLLMProvider {
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
     /**
-     * Get a list of available models from the provider. This is used when loading capabilites in some providers to set `rawModels`.
-     * TODO: We could also maybe have another method to get all models (e.g. ones not available/selected for use)
-     */
-    getModels(): Promise<Model[]>;
-
-    /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): ModelCapabilities;
+    getModelCapabilities(modelId: string): ModelCapability[];
+
+    /**
+     * Get the attributes of a model. E.g. license, modelfile, etc.
+     * @param modelId Model to get attributes for.
+     */
+    getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
 
     /**
@@ -68,17 +65,10 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface OllamaLLMProvider extends BaseLLMProvider {
-    /**
-     * @param modelId The model to get details for.
-     */
-    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
-
-    /**
-     * Get the IDs of models currently loaded into memory.
-     */
-    getLoadedModelIds(): Promise<string[]>;
-
+export interface MemoryManagedProvider extends LLMProvider {
+    readonly loadedModelIds: Ref<Set<string>>;
+    refreshLoadedModels(): Promise<void>;
+    
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.
@@ -94,20 +84,10 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
     unloadModel(modelId: string): Promise<boolean>;
 }
 
-export interface LPCloudLLMProvider extends BaseLLMProvider {
+export interface LPCloudLLMProvider extends LLMProvider {
     isSignedIn: boolean;
 }
 
-
-export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
-
-export type LLMProviderTypes = OllamaProvider;
-
-
-export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
-    return 'getLoadedModelIds' in provider;
-}
-
-export function isLPCloudProvider(provider: LLMProvider): provider is LPCloudProvider {
-    return 'isSignedIn' in provider;
+export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
+    config: TConfig;
 }

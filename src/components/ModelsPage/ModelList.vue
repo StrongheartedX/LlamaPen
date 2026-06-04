@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
@@ -8,15 +8,13 @@ import { BiCopy, BiDotsVerticalRounded, BiHide, BiLinkExternal, BiPencil, BiShow
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
-import type { Model } from '@/providers/base/types';
-import useUIStore from '@/stores/uiStore';
+import useUIStore from '@/stores/useUiStore';
 // This has to be imported as we are using it programatically
 import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { rawModels } = useProviderManager();
-const { isConnected, isLoading, allModelIds, isOllama } = useProviderManager();
+const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
 const cloudUserStore = useCloudUserStore();
 
 const props = defineProps<{
@@ -29,24 +27,24 @@ const emit = defineEmits<{
 
 const refreshModelList = () => emit('refreshModelList');
 
-const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
-const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => item.info.id === modelName && item.loadedInMemory);
+const isHidden = (modelId: string) => config.chat.hiddenModels.includes(modelId);
+const isLoadedInMemory = (modelId: string) => loadedModelIds.value.has(modelId);
 
-const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
+const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
     {
         type: 'text',
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
-        onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.id}`, '_blank'),
+        onClick: ({ modelId }) => window.open(`https://ollama.com/library/${modelId}`, '_blank'),
         condition: isOllama.value
     },
     {
         type: 'text',
-        text: ({ modelData }) => isLoadedInMemory(modelData.id) ? 'Unload from memory' : 'Load into memory',
-        onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
+        text: ({ modelId }) => isLoadedInMemory(modelId) ? 'Unload from memory' : 'Load into memory',
+        onClick: ({ modelId }) => toggleModelLoaded(modelId),
         icon: {
             type: 'factory',
-            func: ({ modelData }: { modelData: Model }) => (isLoadedInMemory(modelData.id) ? IconMemoryUnload : Fa6Memory) as IconType
+            func: ({ modelId }: { modelId: string }) => (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType
         },
         condition: isOllama.value
     },
@@ -56,31 +54,31 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     },
     {
         type: 'text',
-        text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
-        onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
+        text: ({ modelId }) => isHidden(modelId) ? 'Unhide model' : 'Hide model',
+        onClick: ({ modelId }) => setModelHidden(modelId, isHidden(modelId)),
         icon: {
             type: 'factory',
-            func: ({ modelData }: { modelData: Model }) => isHidden(modelData.id) ? BiShow : BiHide
+            func: ({ modelId }: { modelId: string }) => isHidden(modelId) ? BiShow : BiHide
         },
     },
     {
         type: 'text',
         text: 'Rename',
         icon: BiPencil,
-        onClick: ({ modelData, displayName }) => renameModel(modelData, displayName),
+        onClick: ({ modelId, displayName }) => renameModel(modelId, displayName),
     },
     {
         type: 'text',
         text: 'Duplicate model',
         icon: BiCopy,
-        onClick: ({ modelData }) => copyModel(modelData.id),
+        onClick: ({ modelId }) => copyModel(modelId),
         condition: isOllama.value
     },
     {
         type: 'text',
         text: 'Delete model',
         icon: BiTrash,
-        onClick: ({ modelData }) => deleteModel(modelData.id),
+        onClick: ({ modelId }) => deleteModel(modelId),
         condition: isOllama.value,
         category: 'danger'
     }
@@ -102,13 +100,13 @@ async function toggleModelLoaded(modelName: string) {
     }
 }
 
-async function renameModel(modelData: Model, displayName: string) {
+async function renameModel(modelId: string, displayName: string) {
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
     if (newName === '' || !newName) {
         newName = displayName;
     }
 
-    config.chat.modelRenames[modelData.id] = newName;
+    config.chat.modelRenames[modelId] = newName;
     refreshModelList();
 }
 
@@ -160,7 +158,7 @@ const hideAll = () => {
     refreshModelList();
 };
 
-const showProprietaryModels = ref(cloudUserStore.userInfo.options.showProprietaryModels);
+const showProprietaryModels = computed(() => cloudUserStore.userInfo.options.showProprietaryModels);
 
 const searchQuery = ref('');
 
@@ -207,7 +205,7 @@ const batchActions: MenuEntry[] = [
             </div>
 
             <div v-if="!isConnected && !isLoading">
-                Not connected to Ollama
+                Not connected to '{{ currentProvider.name }}'
             </div>
             <div v-else-if="modelsList.length === 0">
                 No models found
@@ -216,28 +214,34 @@ const batchActions: MenuEntry[] = [
                 No models match search
             </div>
             <RouterLink 
-                v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
+                v-for="{ info: { id: modelId }, hidden, displayName } in queriedModels"
                 exactActiveClass="router-link-exact-active"
-                :to="`/models/installed/${info.id}`"
+                :to="`/models/installed/${modelId}`"
                 class="group"
                 :class="{ 'opacity-75': hidden }">
                 <div 
                     class="group-[.router-link-exact-active]:bg-base-950! flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-800">
-                    <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
+                    <IconModel :name="modelId ?? 'Unknown'" class="size-6" />
                     <span class="text-sm font-medium">
                         {{ displayName }}
                     </span>
                     
                     <div class="grow"></div>
-                    <Tooltip v-if="hidden" text="Hidden" class="flex items-center justify-center">
+                    <Tooltip 
+                        v-if="hidden" 
+                        text="Hidden" 
+                        class="flex items-center justify-center">
                         <BiHide class="h-full" />
                     </Tooltip>
-                    <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
+                    <Tooltip 
+                        v-if="isLoadedInMemory(modelId)" 
+                        text="Loaded in memory" 
+                        class="flex items-center justify-center">
                         <IconMemoryLoad class="h-full" />
                     </Tooltip>
                     <FloatingActionMenu 
                         anchored="left"
-                        :passArgs="{ modelData: info, displayName }" 
+                        :passArgs="{ modelId, displayName }" 
                         :actions="modelActions">
                         <button @click.prevent
                             class="hover:bg-base-700 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">

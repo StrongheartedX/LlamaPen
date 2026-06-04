@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed } from 'vue';
 import { BiImageAdd } from 'vue-icons-plus/bi';
@@ -14,7 +14,7 @@ defineProps<{
 }>();
 
 const selectedModelHasVision = computed(() => {
-    return selectedModelCapabilities.value.supportsVision
+    return selectedModelCapabilities.value.includes('vision')
 });
 
 const cloudNotAllowed = computed(() => {

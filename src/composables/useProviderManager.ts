@@ -1,16 +1,28 @@
-import { isLPCloudProvider, isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
-import type { ModelCapabilities } from "@/providers/base/types";
+import { type LLMProvider } from "@/providers/base/ProviderInterface";
+import { isLPCloudProvider, isOllamaProvider } from "@/providers/utils/ProviderCheck";
+import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import type { Model } from "@/providers/base/types";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
+import logger from "@/lib/logger";
+import { OpenAIProvider } from "@/providers/openai/OpenAIProvider";
+import { OllamaProvider } from "@/providers/ollama/OllamaProvider";
 
 // Types
+/** App-level info */
+export type ModelCapability = ('vision' | 'reasoning' | 'tools' | ({} & string));
+
 export type ModelInfo = {
-    info: Model;
     displayName: string;
-    loadedInMemory: boolean;
     hidden: boolean;
+    /** Provider-level info */
+    info: { 
+        name: string; // Pretty name
+        id: string;
+        subtitle: string;
+        capabilities: ModelCapability[];
+        providerMetadata?: ProviderMetadata;
+    };
 }
 
 type ModelInfoResult = 
@@ -24,12 +36,40 @@ export function useProviderManager() {
     const allProviders = computed(() => providerFactory.getProviders());
     const setActiveProvider = (providerKey: string) => providerFactory.setSelectedProvider(providerKey);
 
+    const registerProvider = (key: string, type: Exclude<LLMProvider['type'], 'lpcloud'>) => {
+        if (allProviders.value.has(key)) {
+            logger.warn(`Provider with key '${key}' is already registered, skipping`);
+            return;
+        }
+
+        switch (type) {
+            case 'ollama':
+                providerFactory.register(key, new OllamaProvider());
+                break;
+            case 'openai':
+                providerFactory.register(key, new OpenAIProvider({
+                    name: 'OpenAI',
+                    baseURL: 'https://api.openai.com/v1',
+                    apiKey: 'placeholder',
+                }));
+                break;
+            default:
+                logger.error(`Invalid provider type '${type}' for provider with key '${key}'`);
+        }
+    }
+
     // ----------------
     // Current provider
     // ----------------
     const currentProvider = computed(() => providerFactory.getSelectedProvider());
     const currentProviderId = computed(() => providerFactory.getSelectedProviderId())
     const rawModels = currentProvider.value.rawModels;
+    const loadedModelIds = computed(() => {
+        if (isOllamaProvider(currentProvider.value)) {
+            return currentProvider.value.loadedModelIds.value;
+        }
+        return new Set<string>();
+    });
 
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
     const isLPCloud = computed(() => isLPCloudProvider(currentProvider.value));
@@ -43,7 +83,7 @@ export function useProviderManager() {
     );
 
 
-    // Base methods (from BaseLLMProvider)
+    // Base methods
     const refreshConnection = () => currentProvider.value.refreshConnection();
     const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
 
@@ -54,9 +94,6 @@ export function useProviderManager() {
 
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
-
-    const getModels = ((...args: Parameters<LLMProvider['getModels']>) =>
-        currentProvider.value.getModels(...args)) as LLMProvider['getModels'];
 
     const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
             currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
@@ -80,18 +117,15 @@ export function useProviderManager() {
         return currentProvider.value.unloadModel(modelId);
     };
 
-    const getLoadedModelIds = () => {
-        if (!isOllamaProvider(currentProvider.value)) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
+    const refreshLoadedModels = () => {
+        if (isOllamaProvider(currentProvider.value)) {
+            return currentProvider.value.refreshLoadedModels();
         }
-        return currentProvider.value.getLoadedModelIds();
+        logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
     };
 
-    const getModelDetails = (modelId: string) => {
-        if (!isOllamaProvider(currentProvider.value)) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support model details`);
-        }
-        return currentProvider.value.getModelDetails(modelId);
+    const getModelAttributes = (modelId: string) => {
+        return currentProvider.value.getModelAttributes(modelId);
     };
 
     // Model Info utils
@@ -122,12 +156,9 @@ export function useProviderManager() {
             }
         });
 
-    const selectedModelCapabilities = computed<ModelCapabilities>(() => {
-        if (!selectedModelInfo.value.exists) return {
-            supportsFunctionCalling: false,
-            supportsReasoning: false,
-            supportsVision: false
-        };
+    // https://stackoverflow.com/a/79910618/17727765
+    const selectedModelCapabilities = computed(() => {
+        if (!selectedModelInfo.value.exists) return [];
 
         return getModelCapabilities(selectedModelInfo.value.data.info.id);
     });
@@ -135,6 +166,7 @@ export function useProviderManager() {
     return {
         allProviders,
         setActiveProvider,
+        registerProvider,
 
         currentProvider,
         currentProviderId,
@@ -154,15 +186,15 @@ export function useProviderManager() {
         // Base
         loadModels,
         chat,
-        getModels,
         getModelCapabilities,
         generateChatTitle,
+        getModelAttributes,
 
         // Ollama-specific
+        loadedModelIds,
         loadModelIntoMemory,
         unloadModel,
-        getLoadedModelIds,
-        getModelDetails,
+        refreshLoadedModels,
 
         // Get model info
         getModelInfo,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { computed, ref } from 'vue';
 import { BiBrain, BiCheck, BiChevronDown, BiChevronUp, BiLoaderAlt } from 'vue-icons-plus/bi';
 

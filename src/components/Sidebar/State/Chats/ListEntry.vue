@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { BiChat, BiDotsHorizontalRounded, BiPencil, BiPin, BiSolidChat, BiSolidPin, BiTrash } from 'vue-icons-plus/bi';
-import useChatsStore from '@/stores/chatsStore';
+import useChatsStore from '@/stores/useChatsStore';
 import router from '@/lib/router';
 import useMessagesStore from '@/stores/messagesStore';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const props = defineProps<{
     chat: Chat,
