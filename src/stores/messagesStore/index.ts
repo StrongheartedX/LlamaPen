@@ -292,7 +292,8 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
-		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, {
+		const messagesForProvider = openedChatMessages.value.filter(m => m.id !== ollamaMessageId);
+		const chatIterator = await useProviderManager().chat(messagesForProvider, abortController.signal, {
 			model: selectedModel,
 			reasoningEnabled: config.chat.thinking.enabled,
 		});
