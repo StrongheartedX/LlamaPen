@@ -112,6 +112,7 @@ const selectActions: MenuEntry[] = [
 					{{ model.displayName}}
 				</span>
 				<ChatModelSelectItemBadges
+					class="ml-2"
 					:provider-metadata="model.info.providerMetadata"
 					:capabilities="modelCapabilities"
 					:is-favorited="isFavorited()" />
