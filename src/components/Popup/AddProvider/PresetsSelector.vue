@@ -41,6 +41,11 @@ const presets: Record<string, { name: string, baseURL: string, apiKey: string }>
         baseURL: 'https://api.together.ai/v1',
         apiKey: '',
     },
+    deepseek: {
+        name: 'DeepSeek',
+        baseURL: 'https://api.deepseek.com',
+        apiKey: '',
+    }
 };
 
 function onSelect(event: Event) {
@@ -81,6 +86,7 @@ const id = useId();
                     <option value="openrouter">OpenRouter</option>
                     <option value="groq">Groq</option>
                     <option value="together">Together AI</option>
+                    <option value="deepseek">DeepSeek</option>
                 </optgroup>
 
                 <option value="custom">Custom</option>
