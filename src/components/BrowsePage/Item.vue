@@ -34,45 +34,45 @@ const selectModel = (modelVariant: string) => emit('selectModel', modelVariant);
                 {{ model.description ? model.description : '(No description)' }}
             </p>
             <div class="flex flex-row gap-2 mt-2">
-                <span class="text-xs font-medium flex flex-row items-center gap-1 bg-base-700 p-0.5 px-2 rounded-full ring-inset ring-1 ring-base-600">
+                <BrowsePageItemPill tooltip="Pull Count">
                     <BiDownload class="size-4" />
                     {{ model.pullCount }}
-                </span>
-                <span class="text-xs font-medium flex flex-row items-center gap-1 bg-base-700 p-0.5 px-2 rounded-full ring-inset ring-1 ring-base-600">
+                </BrowsePageItemPill>
+                <BrowsePageItemPill tooltip="Last Updated">
                     <BiListPlus class="size-4" />
                     {{ new Date(model.lastUpdated).toLocaleDateString() }}
-                </span>
-                <span class="text-xs font-medium flex flex-row items-center gap-1 bg-base-700 p-0.5 px-2 rounded-full ring-inset ring-1 ring-base-600">
+                </BrowsePageItemPill>
+                <BrowsePageItemPill tooltip="Tag Count">
                     <BiPurchaseTagAlt class="size-4" />
                     {{ model.tagCount }}
-                </span>
+                </BrowsePageItemPill>
             </div>
             <div class="flex flex-row gap-2 mt-2">
                 <span
                     v-for="capability in model.capabilities" 
                     :key="capability"
-                    class="text-base-300 capitalize text-xs font-medium flex flex-row items-center gap-1 ring-inset ring-1 py-0.5 px-2 rounded-full"
+                    class="capitalize text-xs font-medium flex flex-row items-center gap-1 ring-inset ring-1 py-0.5 px-2 rounded-full"
                     :class="{
-                        'bg-capability-audio/40 ring-capability-audio': capability === 'audio',
-                        'bg-capability-completion/40 ring-capability-completion': capability === 'completion',
-                        'bg-capability-reasoning/40 ring-capability-reasoning': capability === 'thinking',
-                        'bg-capability-tools/40 ring-capability-tools': capability === 'tools',
-                        'bg-capability-vision/40 ring-capability-vision': capability === 'vision',
+                        'bg-capability-audio/40 ring-capability-audio text-cyan-200': capability === 'audio',
+                        'bg-capability-completion/40 ring-capability-completion text-teal-200': capability === 'completion',
+                        'bg-capability-reasoning/40 ring-capability-reasoning text-violet-200': capability === 'thinking',
+                        'bg-capability-tools/40 ring-capability-tools text-blue-200': capability === 'tools',
+                        'bg-capability-vision/40 ring-capability-vision text-green-200': capability === 'vision',
                     }">
                     {{ capability }}
                 </span>
             </div>
-            <div class="flex flex-row gap-2 mt-2 overflow-auto max-w-full">
+            <div class="text-sm font-medium flex flex-row gap-2 mt-2 overflow-auto max-w-full">
                 <button
                     v-if="model.hasCloud"
-                    class="bg-base-700 hover:bg-base-500 rounded-full p-1 px-3 flex items-center flex-row gap-1 cursor-pointer select-none ring-inset ring-1 ring-base-600"
+                    class="bg-base-700 hover:bg-base-600 rounded-full p-1 px-3 flex items-center justify-center flex-row gap-1 cursor-pointer select-none ring-inset ring-1 ring-base-600"
                     @click="selectModel(`${model.model}:cloud`)">
                     <BiPlus />
                     Cloud
                 </button>
                 <button
                     v-for="size in model.sizes"
-                    class="bg-base-700 disabled:bg-base-800 disabled:text-base-400 not-disabled:hover:bg-base-500 rounded-full p-1 px-3 flex items-center flex-row gap-1 not-disabled:cursor-pointer select-none ring-inset ring-1 ring-base-600"
+                    class="bg-base-700 hover:bg-base-600 rounded-full p-1 px-3 flex items-center justify-center flex-row gap-1 cursor-pointer select-none ring-inset ring-1 ring-base-600"
                     :key="size"
                     @click="selectModel(`${model.model}:${size}`)">
                     <BiCloudDownload />
