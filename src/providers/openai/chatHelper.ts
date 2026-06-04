@@ -19,15 +19,15 @@ export async function* chatHelper(
         tool: 'assistant',
         user: 'user',
     };
+
+    const formattedMessages = messages.map((m) => ({
+        role: rolemap[m.type],
+        content: m.content,
+    }));
     
     const response = await instance.chat.completions.create({
         model: options.model,
-        messages: messages.map((m) => {
-            return {
-                role: rolemap[m.type],
-                content: m.content,
-            } 
-        }),
+        messages: formattedMessages,
         stream: true,
     }, {
         signal: abortSignal,
