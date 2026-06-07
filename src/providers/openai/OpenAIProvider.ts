@@ -69,8 +69,7 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
     }
 
     public getModelCapabilities(_modelId: string): ModelCapability[] {
-        // OpenAI-style APIs don't expose model capabilities apparently?
-        return [];
+        return [ 'reasoning', 'tools', 'vision' ];
     }
 
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {

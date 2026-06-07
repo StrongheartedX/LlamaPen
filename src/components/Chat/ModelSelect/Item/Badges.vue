@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ModelCapability } from '@/composables/useProviderManager';
+import { useProviderManager, type ModelCapability } from '@/composables/useProviderManager';
 import type { ProviderMetadata } from '@/providers/base/types';
 import type { LpCloudPricing } from '@/providers/lpcloud/types';
 import useCloudUserStore from '@/stores/useCloudUserStore';
-import { BiBox, BiBrain, BiHeart, BiLock, BiShow, BiStar, BiWrench } from 'vue-icons-plus/bi';
+import { BiBox, BiBrain, BiHeart, BiLock, BiQuestionMark, BiShow, BiStar, BiWrench } from 'vue-icons-plus/bi';
 
 const cloudUserStore = useCloudUserStore();
 
@@ -12,6 +12,8 @@ const props = defineProps<{
     capabilities: ModelCapability[];
     isFavorited: boolean;
 }>();
+
+const { currentProvider } = useProviderManager();
 
 const lpCloudMetadata = computed(() => props.providerMetadata?.provider === 'lpcloud' ? props.providerMetadata : null);
 
@@ -35,7 +37,17 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 </script>
 
 <template>
-    <div class="flex flex-row gap-2 shrink-0 min-w-fit">
+    <div 
+        v-if="currentProvider.type === 'openai'">
+        <div 
+            class="bg-slate-400/25 rounded-sm ring-1 ring-slate-400 p-0.5"
+            title="Capabilities unknown - OpenAI-style APIs do not expose model capabilities">
+            <BiQuestionMark class="text-slate-400 size-4" />
+        </div>
+    </div>
+    <div
+        v-else 
+        class="flex flex-row gap-2 shrink-0 min-w-fit">
         <template v-if="lpCloudMetadata">
             <Tooltip 
                 size="small"
