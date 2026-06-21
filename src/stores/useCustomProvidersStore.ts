@@ -16,11 +16,17 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
         return key;
     }
 
-    function update(key: string, updatedFields: Partial<Omit<CustomProvider, 'key'>>) {
-        const provider = providers.value.find((p) => p.key === key);
-        if (provider) {
-            Object.assign(provider, updatedFields);
-        }
+    function update(updatedFields: CustomProvider) {
+        const providerKey = providers.value.find((p) => p.key === updatedFields.key);
+        if (!providerKey) return;
+
+        const newProvider: Omit<CustomProvider, 'key'> = {
+            apiKey: updatedFields.apiKey,
+            baseURL: updatedFields.baseURL,
+            name: updatedFields.name,
+        };
+
+        Object.assign(providerKey, newProvider);
     }
 
     function remove(key: string) {

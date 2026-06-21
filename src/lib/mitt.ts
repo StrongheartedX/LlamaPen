@@ -20,7 +20,8 @@ type Events = {
     focusInputBar: void,
     modelSelectFocusFilter: void,
     shortcutsPopup: void,
-    upsertProviderPopup?: {
+    createProviderPopup: void,
+    editProviderPopup: {
         key: string;
         name?: string;
         baseURL?: string;

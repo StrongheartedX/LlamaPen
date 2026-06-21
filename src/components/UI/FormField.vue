@@ -9,6 +9,7 @@ withDefaults(defineProps<{
     placeholder?: string;
     required?: HTMLInputElement['required'];
     list?: string;
+    disabled?: boolean;
 }>(), {
     type: 'text',
 });
@@ -20,7 +21,7 @@ const showingPassword = ref(false);
 </script>
 
 <template>
-    <div>
+    <div class="mt-2">
         <div class="inline-flex items-center gap-1">
             <Label :for="id">{{ label }}</Label>
             <Tooltip
@@ -37,7 +38,8 @@ const showingPassword = ref(false);
                 v-model="value"
                 :required
                 :list
-                :id />
+                :id
+                :disabled />
             <button
                 v-if="type === 'password'"
                 class="p-4 hover:bg-base-600 rounded-md"

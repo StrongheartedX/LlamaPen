@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useConfigStore } from '@/stores/useConfigStore';
-import { useRouter } from 'vue-router';
 import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
@@ -13,7 +12,6 @@ import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
 
 const config = useConfigStore();
-const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
@@ -70,25 +68,10 @@ function clearChats() {
     messagesStore.clearAllMessages();
 }
 
-function handleEscape(e: KeyboardEvent) {
-    if (document.activeElement?.tagName === 'BODY') {
-        return;
-    }
-
-    if (e.key === 'Escape') {
-        router.back();
-    }
-}
-
 onMounted(async () => {
     setPageTitle('Settings');
 
     transitionSpeed.value = config.transitionSpeed;
-    document.addEventListener('keydown', handleEscape);
-});
-
-onBeforeUnmount(() => {
-    document.removeEventListener('keydown', handleEscape);
 });
 
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
@@ -167,19 +150,19 @@ const themes = {
                 <div
                     v-for="customProvider in customProvidersStore.providers"
                     :key="customProvider.key"
-                    class="flex items-center justify-between p-2 border border-base-500 rounded-lg">
+                    class="flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
                     <div class="flex flex-col min-w-0">
                         <span class="font-medium truncate">{{ customProvider.name }}</span>
-                        <span class="text-sm text-base-300 truncate">
-                            <BiLink class="size-3 inline"/>
-                            {{ customProvider.baseURL }}
-                        </span>
+                        <div class="text-sm text-base-300 truncate inline-flex items-center gap-1">
+                            <BiLink class="size-3"/>
+                            <span class="truncate">{{ customProvider.baseURL }}</span>
+                        </div>
                     </div>
                     <ButtonPrimary 
-                        text="Edit" 
+                        text="Edit"
                         color="primary" 
                         type="button" 
-                        @click="emitter.emit('upsertProviderPopup', customProvider)" />
+                        @click="emitter.emit('editProviderPopup', customProvider)" />
                 </div>
             </div>
             <div v-else class="text-sm text-base-300">
@@ -189,7 +172,7 @@ const themes = {
             <ButtonPrimary 
                 text="Add Provider" 
                 type="button" 
-                @click="emitter.emit('upsertProviderPopup')" />
+                @click="emitter.emit('createProviderPopup')" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory v-if="isOllama" label="Ollama">

@@ -60,38 +60,33 @@ function onSelect(event: Event) {
 const selectedPreset = defineModel<string>('selected-preset');
 
 const id = useId();
-
 </script>
 
 <template>
-    <div class="my-2">
-        <div class="inline-flex items-center gap-1">
-            <Label :for="id">Presets</Label>
-        </div>
-        <div class="flex flex-row gap-2">
-            <select
-                class="w-full bg-base-800 px-6 py-4 rounded-md outline-none ring ring-inset ring-base-600 focus:ring-base-300 font-semibold"
-                :id
-                v-model="selectedPreset"
-                @change="onSelect">
-                <option value="" disabled>Select a preset</option>
+    <div class="mt-2">
+        <Label :for="id">Preset</Label>
+        <select
+            class="w-full bg-base-800 px-6 py-4 rounded-md outline-none ring ring-inset ring-base-600 focus:ring-base-300"
+            :id
+            v-model="selectedPreset"
+            @change="onSelect">
+            <option value="" disabled>Select a preset</option>
 
-                <optgroup label="Self-hosted">
-                    <option value="llamacpp">llama.cpp</option>
-                    <option value="lmstudio">LM Studio</option>
-                    <option value="vllm">vLLM</option>
-                </optgroup>
+            <optgroup label="Self-hosted">
+                <option value="llamacpp">llama.cpp</option>
+                <option value="lmstudio">LM Studio</option>
+                <option value="vllm">vLLM</option>
+            </optgroup>
 
-                <optgroup label="Cloud">
-                    <option value="openai">OpenAI</option>
-                    <option value="openrouter">OpenRouter</option>
-                    <option value="groq">Groq</option>
-                    <option value="together">Together AI</option>
-                    <option value="deepseek">DeepSeek</option>
-                </optgroup>
+            <optgroup label="Cloud">
+                <option value="openai">OpenAI</option>
+                <option value="openrouter">OpenRouter</option>
+                <option value="groq">Groq</option>
+                <option value="together">Together AI</option>
+                <option value="deepseek">DeepSeek</option>
+            </optgroup>
 
-                <option value="custom">Custom</option>
-            </select>
-        </div>
+            <option value="custom">Custom</option>
+        </select>
     </div>
 </template>

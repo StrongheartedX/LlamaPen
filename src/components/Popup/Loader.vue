@@ -7,4 +7,5 @@
     <PopupSearch />
     <PopupShortcuts />
     <PopupAddProvider />
+    <PopupEditProvider />
 </template>

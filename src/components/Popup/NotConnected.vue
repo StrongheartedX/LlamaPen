@@ -82,7 +82,7 @@ function hide() {
 						<BiHelpCircle class="inline" /> icon in the bottom left of the sidebar;
 					</template>
 				</p>
-				<span class="font-medium text-base">Error:</span>
+				<span class="font-medium text-base pt-8">Error:</span>
 				<code class="bg-base-800 rounded-lg p-1 text-sm! text-base-300">
 					{{ connectionState.error }}
 				</code>
