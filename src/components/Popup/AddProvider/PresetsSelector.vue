@@ -71,6 +71,7 @@ const id = useId();
         <div class="flex flex-row gap-2">
             <select
                 class="w-full bg-base-800 px-6 py-4 rounded-md outline-none ring ring-inset ring-base-600 focus:ring-base-300 font-semibold"
+                :id
                 v-model="selectedPreset"
                 @change="onSelect">
                 <option value="" disabled>Select a preset</option>
