@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Label } from 'reka-ui';
+
 
 const emit = defineEmits<{
     'select-preset': [preset: { name: string, baseURL: string, apiKey: string }];
