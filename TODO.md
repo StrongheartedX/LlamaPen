@@ -1,0 +1,1 @@
+- [ ] function calling for openai-style providers
