@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-s \"build-only {@}\" type-check --",
     "preview": "vite preview",
     "test": "bunx --bun vitest",
     "build-only": "vite build",

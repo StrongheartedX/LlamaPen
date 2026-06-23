@@ -17,6 +17,8 @@ const { currentProvider } = useProviderManager();
 
 const lpCloudMetadata = computed(() => props.providerMetadata?.provider === 'lpcloud' ? props.providerMetadata : null);
 
+const lpCloudPriceTier = computed<LpCloudPricing | null>(() => lpCloudMetadata.value?.data.priceTier ?? null);
+
 const alwaysReasons = computed(() => lpCloudMetadata.value?.data.tags?.includes('alwaysReasons') ?? false);
 
 const lpCloudPricingMap: Record<LpCloudPricing, string> = {
@@ -51,16 +53,16 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
         <template v-if="lpCloudMetadata">
             <Tooltip 
                 size="small"
-                :text="lpCloudPricingMapNames[lpCloudMetadata.data.priceTier]">
+                :text="lpCloudPriceTier !== null ? lpCloudPricingMapNames[lpCloudPriceTier] : ''">
                 <span
                     class="text-xs font-medium flex items-center pl-2 min-w-max"
                     :class="{
-                        'text-lpcloudpricing-verylow': lpCloudMetadata.data.priceTier === 0,
-                        'text-lpcloudpricing-low': [1,2].includes(lpCloudMetadata.data.priceTier),
-                        'text-lpcloudpricing-moderate': lpCloudMetadata.data.priceTier === 3,
-                        'text-lpcloudpricing-high': lpCloudMetadata.data.priceTier === 4,
+                        'text-lpcloudpricing-verylow': lpCloudPriceTier === 0,
+                        'text-lpcloudpricing-low': lpCloudPriceTier !== null && [1,2].includes(lpCloudPriceTier),
+                        'text-lpcloudpricing-moderate': lpCloudPriceTier === 3,
+                        'text-lpcloudpricing-high': lpCloudPriceTier === 4,
                     }">
-                    {{ lpCloudPricingMap[lpCloudMetadata.data.priceTier] }}
+                    {{ lpCloudPriceTier !== null ? lpCloudPricingMap[lpCloudPriceTier] : '' }}
                 </span>
             </Tooltip>
         </template>

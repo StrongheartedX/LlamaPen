@@ -1,6 +1,6 @@
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
-import type { Reactive } from "vue";
+import type { Reactive, Ref } from "vue";
 import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
 import type { ChatOptions, ChatIteratorChunk } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
