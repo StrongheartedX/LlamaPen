@@ -31,6 +31,7 @@ interface UserChatMessage extends BaseChatMessage {
 interface ToolChatMessage extends BaseChatMessage {
 	type: 'tool',
 	toolName: string;
+	toolCallId?: string;
 	completed?: Date;
 }
 
@@ -40,6 +41,7 @@ interface ModelChatMessage extends BaseChatMessage {
 	thinking?: string;
 	status: ModelMessageStatus;
 	toolCalls?: {
+		id?: string;
 		function: {
 			name: string;
 			arguments: Record<string, string | number | boolean>,

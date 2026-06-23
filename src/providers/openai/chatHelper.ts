@@ -1,5 +1,7 @@
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
+import useToolsStore from "@/stores/useToolsStore";
 import type OpenAI from "openai";
+import { convertMessagesToOpenAI, convertToolsToOpenAI } from "./openAIConverters";
 
 /**
  * 
@@ -14,55 +16,45 @@ export async function* chatHelper(
     options: ChatOptions,
     instance: OpenAI,
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
-    const rolemap: Record<ChatMessage['type'], 'assistant' | 'user'> = {
-        model: 'assistant',
-        tool: 'assistant',
-        user: 'user',
-    };
+    const toolsStore = useToolsStore();
 
-    const formattedMessages = messages.map((m) => ({
-        role: rolemap[m.type],
-        content: m.content,
-    }));
-    
     const response = await instance.chat.completions.create({
         model: options.model,
-        messages: formattedMessages,
+        messages: convertMessagesToOpenAI(messages),
         stream: true,
+        ...(toolsStore.toggled.length > 0 &&
+            { tools: convertToolsToOpenAI(toolsStore.tools, toolsStore.toggled) }
+        ),
     }, {
         signal: abortSignal,
     });
 
-    try {
-        for await (const chunk of response) {
-            if (abortSignal.aborted) {
-                return { type: 'done', reason: 'cancelled' };
-            }
+    for await (const chunk of response) {
+        if (abortSignal.aborted) {
+            return { type: 'done', reason: 'cancelled' };
+        }
 
-            if (!chunk.choices.length) continue;
+        if (!chunk.choices.length) continue;
 
-            if (chunk.choices[0].finish_reason) {
-                yield { 
-                    type: 'message',
-                    content: chunk.choices[0].delta.content || '',
-                    thinking: '',
-                };
-
-                yield { 
-                    type: 'done', 
-                    reason: chunk.choices[0].finish_reason === 'stop' ? 'completed' : 'error',
-                };
-
-                continue;
-            }
-
+        if (chunk.choices[0].finish_reason) {
             yield { 
                 type: 'message',
                 content: chunk.choices[0].delta.content || '',
                 thinking: '',
             };
+
+            yield {
+                type: 'done',
+                reason: chunk.choices[0].finish_reason === 'stop' ? 'completed' : 'error',
+            };
+
+            continue;
         }
-    } catch (e) {
-        throw e;
+
+        yield {
+            type: 'message',
+            content: chunk.choices[0].delta.content || '',
+            thinking: '',
+        };
     }
 }
