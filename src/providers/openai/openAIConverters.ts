@@ -75,7 +75,8 @@ export function convertToolsToOpenAI(tools: AppTools, toggledTools: string[]): O
                             }
                         ]
                     )),
-                    required: tool.required,
+                    required: tool.params.map((param) => param.name),
+                    additionalProperties: false,
                 }
             }
         }));
