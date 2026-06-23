@@ -1,1 +1,1 @@
-- [ ] function calling for openai-style providers
+- [X] function calling for openai-style providers
