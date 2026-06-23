@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { emitter } from '@/lib/mitt';
 import logger from '@/lib/logger';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const messagesStore = useMessagesStore();
 const config = useConfigStore();

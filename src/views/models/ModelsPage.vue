@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ModelViewInfo } from '@/components/ModelsPage/types';
-import { isOllamaProvider } from '@/providers/base/ProviderInterface';
+import { BiLoaderAlt } from 'vue-icons-plus/bi';
 
 // todo(provider-separation): organise the components for this by provider,
 // e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.
 
-const config = useConfigStore();
-
 // State
-const { rawModels, loadModels, currentProvider } = useProviderManager();
+const { rawModels, loadModels, getModelAttributes, getModelInfo, getModelCapabilities } = useProviderManager();
+
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -29,15 +27,13 @@ const modelFromParams = computed<string | null>(() => {
     return null;
 });
 
-const isOllama = computed(() => isOllamaProvider(currentProvider.value));
-
 // Helpers 
 const refreshModelList = async () => await loadModels(true);
 
 // Hooks
 onMounted(async () => {
     setPageTitle('Models');
-    refreshModelList();
+    await refreshModelList();
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
@@ -63,34 +59,26 @@ watch(router.currentRoute, () => {
 async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
 
-    if (isOllama.value) {
-        const { data: response, error: infoError } = await useProviderManager().getModelDetails(modelId);
+    try {
+        const attributes = await getModelAttributes(modelId);
 
-        if (infoError || !response) {
-            selectedModel.value = { state: 'error', message: infoError }
-            return;
-        }
+        if (modelFromParams.value !== modelId) return; // user changed models
+
+        const modelName = getModelInfo(modelId).data?.displayName || modelId;
+        const capabilities = getModelCapabilities(modelId);
 
         selectedModel.value = {
             state: 'data',
-            model: response,
-            isLoaded: rawModels.value.some(item => item.info.id === modelId && item.loadedInMemory),
-            type: 'ollama'
+            attributes,
+            modelId,
+            modelName,
+            capabilities,
         };
-    } else {
-        const foundModel = rawModels.value.find(item => item.info.id === modelId);
-
-        if (!foundModel) {
-            selectedModel.value = { state: 'error', message: 'Model not found.' };
-            return;
-        }
-
+    } catch (e) {
         selectedModel.value = {
-            state: 'data',
-            model: foundModel,
-            isLoaded: foundModel.loadedInMemory,
-            type: 'generic',
-        }
+            state: 'error',
+            message: e instanceof Error ? e.message : 'Unknown error',
+        };
     }
 }
 
@@ -103,19 +91,23 @@ async function setModelViewInfo(modelId: string) {
             @refresh-model-list="refreshModelList" />
 
         <UIViewerContainer 
-            v-if="selectedModel.state === 'unselected' && modelFromParams !== 'downloads'" 
+            v-if="selectedModel.state === 'unselected'" 
             class="flex items-center justify-center text-xl" >
-            {{ config.cloud.enabled ?
-                'Model management is only available without API mode.' :
-                'Select a model to view its details, or download a new model.' }}
+            Select a model from the sidebar to view its details.
         </UIViewerContainer>
-        <ModelsPageViewerOllama 
-            v-else-if="isOllama"
-            :modelFromParams 
-            :selectedModel />
-        <ModelsPageViewerGeneric
+        <UIViewerContainer
+            v-else-if="selectedModel.state === 'loading'"
+            class="flex items-center justify-center" >
+            <BiLoaderAlt class="animate-spin" />
+        </UIViewerContainer>
+        <UIViewerContainer
+            v-else-if="selectedModel.state === 'error'"
+            class="flex items-center justify-center" >
+            Error loading model details: <code>{{ selectedModel.message }}</code>
+        </UIViewerContainer>
+        <ModelsPageViewer
             v-else
-            :modelFromParams
+            :modelFromParams 
             :selectedModel />
     </div>
 </template>

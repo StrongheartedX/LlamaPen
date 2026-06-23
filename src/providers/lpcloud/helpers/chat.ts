@@ -1,4 +1,4 @@
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import type { ChatRequest } from "ollama";
 import * as Ollama from 'ollama/browser';
@@ -60,7 +60,12 @@ async function* chatIterator(
 
             if (chunk.done) {
                 // Process final chunk
-                yield { type: 'message', data: chunk };
+                yield { 
+                    type: 'message',
+                    content: chunk.message.content,
+                    thinking: chunk.message.thinking,
+                    tool_calls: chunk.message.tool_calls,
+                };
 
                 yield { 
                     type: 'done', 
@@ -77,7 +82,12 @@ async function* chatIterator(
                 continue;
             }
 
-            yield { type: 'message', data: chunk };
+            yield { 
+                type: 'message',
+                content: chunk.message.content,
+                thinking: chunk.message.thinking,
+                tool_calls: chunk.message.tool_calls,
+            };
         }
     } catch (e) {
         throw e;

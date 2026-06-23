@@ -5,15 +5,15 @@ import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { useConfigStore } from '../config';
-import useChatsStore from '../chatsStore';
-import useToolsStore from '../toolsStore';
+import { useConfigStore } from '../useConfigStore';
+import useChatsStore from '../useChatsStore';
+import useToolsStore from '../useToolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ChatIteratorChunk } from '@/providers/base/types';
-import useUIStore from '../uiStore';
+import useUIStore from '../useUiStore';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -164,7 +164,8 @@ const useMessagesStore = defineStore('messages', () => {
 					created: new Date(),
 					chatId,
 					content: '',
-					toolName: tool.function.name
+					toolName: tool.function.name,
+					toolCallId: tool.id,
 				}
 			});
 
@@ -183,6 +184,7 @@ const useMessagesStore = defineStore('messages', () => {
 						return db.messages.update(messageId, {
 							content: response.content,
 							completed: new Date(),
+							toolCallId: response.toolCallId,
 						} as Partial<ToolChatMessage>)
 					})
 				);
@@ -292,7 +294,8 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
-		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, {
+		const messagesForProvider = openedChatMessages.value.filter(m => m.id !== ollamaMessageId);
+		const chatIterator = await useProviderManager().chat(messagesForProvider, abortController.signal, {
 			model: selectedModel,
 			reasoningEnabled: config.chat.thinking.enabled,
 		});
@@ -322,8 +325,8 @@ const useMessagesStore = defineStore('messages', () => {
 					messageGenerationStates.value[ollamaMessageId] = { status: 'generating' };
 				}
 
-				const messageChunk = chunk.data.message.content;
-				const thoughtsChunk = chunk.data.message.thinking || '';
+				const messageChunk = chunk.content;
+				const thoughtsChunk = chunk.thinking ?? '';
 
 				const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
 				if (messageIndex !== -1) {
@@ -344,8 +347,8 @@ const useMessagesStore = defineStore('messages', () => {
 						thinkEnded = Date.now();
 					}
 
-					if (chunk.data.message.tool_calls) {
-						for (const toolCall of chunk.data.message.tool_calls) {
+					if (chunk.tool_calls) {
+						for (const toolCall of chunk.tool_calls) {
 							logger.info('Messages Store', 'Saved tool call to list', toolCall);
 							toolCalls.push(toolCall);
 						}

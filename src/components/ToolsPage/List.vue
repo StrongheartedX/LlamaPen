@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import useToolsStore from '@/stores/toolsStore';
+import useToolsStore from '@/stores/useToolsStore';
 import { BiCheckCircle, BiDotsVerticalRounded, BiMinusCircle, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
@@ -34,12 +34,30 @@ function newTool() {
 const toolsActions: MenuEntry[] = [
     {
         type: 'text',
+        text: () => toolsStore.toggled.length > 0 ? 'Disable all' : 'Enable all',
+        onClick: toggleAll,
+        icon: BiRefresh,
+        category: 'general'
+    },
+    {
+        type: 'divider',
+    },
+    {
+        type: 'text',
         text: 'Reset to default',
         onClick: resetToDefault,
-        icon: BiRefresh,
+        icon: BiTrash,
         category: 'danger'
     }
 ];
+
+function toggleAll() {
+    if (toolsStore.toggled.length > 0) {
+        toolsStore.toggled = [];
+    } else {
+        toolsStore.toggled = Object.entries(toolsStore.tools).map(([name, _tool]) => name);
+    }
+}
 
 function resetToDefault() {
     if (!confirm("Are you sure you want to delete all custom tools (page will refresh)?")) return;
@@ -100,7 +118,11 @@ function renameItem(toolName: string) {
     allTools[newToolName] = oldTool;
     delete toolsStore.tools[toolName];
 
-    router.push(`/tool/${newToolName}`);
+    if (toolsStore.toggled.includes(toolName)) {
+        toolsStore.toggled = toolsStore.toggled.map(tool => tool === toolName ? newToolName : tool);
+    }
+
+    router.push(`/tools/${newToolName}`);
 }
 
 </script>

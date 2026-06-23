@@ -136,11 +136,11 @@ const useToolsStore = defineStore('tools', () => {
      * @param toolCalls The tool calls to run
      * @returns The tool called along with the response.
      */
-    async function handleToolCalls(toolCalls: ModelChatMessage['toolCalls']): Promise<{toolName: string, content: string}[] | null> {
+    async function handleToolCalls(toolCalls: ModelChatMessage['toolCalls']): Promise<{toolName: string, toolCallId?: string, content: string}[] | null> {
         if (!toolCalls || toolCalls.length === 0) return null;
         logger.info('Tools Store', 'Processing tool calls', toolCalls);
 
-        const responses: { toolName: string, content: string }[] = [];
+        const responses: { toolName: string, toolCallId?: string, content: string }[] = [];
         
         const promises = toolCalls.map(async (tool) => {
             const toCall = tools.value[tool.function.name];
@@ -148,7 +148,11 @@ const useToolsStore = defineStore('tools', () => {
 
             const response = await runToolCall(tool, toCall);
 
-            responses.push({toolName: tool.function.name, content: response });
+            responses.push({
+                toolName: tool.function.name,
+                toolCallId: tool.id,
+                content: response,
+            });
         });
 
         await Promise.all(promises);

@@ -1,5 +1,5 @@
 import logger from "@/lib/logger";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import { tryCatch } from "@/utils/core/tryCatch";
 import { Ollama, type ChatRequest, type CopyRequest, type DeleteRequest, type ShowRequest, type PullRequest } from "ollama/browser";
 

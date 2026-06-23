@@ -1,6 +1,6 @@
 import db from "@/lib/db";
 import logger from "@/lib/logger";
-import { useConfigStore } from "@/stores/config";
+import { useConfigStore } from "@/stores/useConfigStore";
 import { tryCatch } from "@/utils/core/tryCatch";
 import { ollamaWrapper } from "../OllamaWrapper";
 

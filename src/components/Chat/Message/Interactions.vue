@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import logger from '@/lib/logger';
 import { BiBarChartAlt, BiCopy, BiInfoCircle, BiPencil, BiTrash } from 'vue-icons-plus/bi';
 import useMessagesStore from '@/stores/messagesStore';
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 
 const props = defineProps<{
     message: ChatMessage;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/config';
+import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelIcon } from '@/composables/useModelIcon';
+import { computed } from "vue";
 
 const props = defineProps<{
 	name: string;

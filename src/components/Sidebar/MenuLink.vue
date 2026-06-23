@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { IconType } from 'vue-icons-plus';
+import type { Component } from 'vue';
 import type { RouterLinkProps } from 'vue-router';
 
 defineProps<{
     text: string;
-    icon: IconType;
+    icon: Component;
     to: RouterLinkProps['to'];
     badge?: string;
 }>();

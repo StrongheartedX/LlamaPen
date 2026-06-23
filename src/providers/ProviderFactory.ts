@@ -32,10 +32,10 @@ class ProviderFactory {
     }
 
     getSelectedProvider(): LLMProvider {
-        // For now, always return OllamaProvider
         const provider = this.providers.get(this.selectedProvider);
         if (!provider) {
-            throw new Error(`No provider registered under '${this.selectedProvider}'`);
+            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
+            return this.providers.get('ollama')!;
         }
         return provider;
     }

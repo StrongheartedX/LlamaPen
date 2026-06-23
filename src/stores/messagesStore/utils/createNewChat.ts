@@ -1,6 +1,6 @@
 import logger from "@/lib/logger";
-import useChatsStore from "@/stores/chatsStore";
-import { useConfigStore } from "@/stores/config";
+import useChatsStore from "@/stores/useChatsStore";
+import { useConfigStore } from "@/stores/useConfigStore";
 
 export async function createNewChat(
     firstMessageContent: string,
