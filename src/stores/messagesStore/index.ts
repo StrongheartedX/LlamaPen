@@ -164,7 +164,8 @@ const useMessagesStore = defineStore('messages', () => {
 					created: new Date(),
 					chatId,
 					content: '',
-					toolName: tool.function.name
+					toolName: tool.function.name,
+					toolCallId: tool.id,
 				}
 			});
 
@@ -183,6 +184,7 @@ const useMessagesStore = defineStore('messages', () => {
 						return db.messages.update(messageId, {
 							content: response.content,
 							completed: new Date(),
+							toolCallId: response.toolCallId,
 						} as Partial<ToolChatMessage>)
 					})
 				);

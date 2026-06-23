@@ -18,6 +18,7 @@ export type ChatIteratorChunk = {
 };
 
 export interface ToolCall {
+	id?: string;
     function: {
         name: string;
         arguments: Record<string, string | number | boolean>;
