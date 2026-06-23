@@ -100,11 +100,16 @@ function renderText(text: string) {
 </script>
 
 <template>
-    <div class="group/message m-2 mb-0 flex flex-col" ref="messageTextContainer">
+    <ChatMessageToolCall 
+        v-if="props.message.type === 'tool'" 
+        :message="message as ToolChatMessage" />
+    <div 
+        v-else 
+        class="group/message m-2 mb-0 flex flex-col" 
+        ref="messageTextContainer">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-base-800 max-w-[70%] shadow-md shadow-base-950/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
-            'bg-base-700 m-0! rounded-xl': props.message.type === 'tool'
         }">
             <ChatMessageModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
             <img 
@@ -135,8 +140,8 @@ function renderText(text: string) {
                 <div 
                     v-else-if="message.type === 'model'" >
                     <ChatMessageThinkBlock :message="(message as ModelChatMessage)" :messageState />
-                    <ChatMessageModelToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
+                    <ChatMessageModelToolCalls :message="(message as ModelChatMessage)" />
                     <div
                         v-if="messageState.generating"
                         class="animate-breathe rounded-full bg-base-100 inline-block"
@@ -158,7 +163,6 @@ function renderText(text: string) {
                         </div>
                     </div>
                 </div>
-                <ChatMessageToolCallsMessage :message v-else-if="message.type === 'tool'" />
             </div>
         </div>
         <ChatMessageInteractions
