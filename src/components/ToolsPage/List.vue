@@ -118,7 +118,11 @@ function renameItem(toolName: string) {
     allTools[newToolName] = oldTool;
     delete toolsStore.tools[toolName];
 
-    router.push(`/tool/${newToolName}`);
+    if (toolsStore.toggled.includes(toolName)) {
+        toolsStore.toggled = toolsStore.toggled.map(tool => tool === toolName ? newToolName : tool);
+    }
+
+    router.push(`/tools/${newToolName}`);
 }
 
 </script>
